@@ -18,6 +18,9 @@ public class Player : MonoBehaviour
 
     // Weapons //
     public Weapon Weapon;
+    public float FireTime = 0.2f;
+    float LastFireTime = 0;
+    public GameObject BulletObject;
     public enum FireState { Idle, Firing };
     public FireState Firing = FireState.Idle;
 
@@ -77,11 +80,19 @@ public class Player : MonoBehaviour
 		}
 
         // Firing //
-        if (Input.GetButtonDown("Fire1"))
+        //if (Input.GetButtonDown("Fire1"))
+        if (Input.GetButton("Fire1"))
 		{
-            print("Controls: Fire");
-			Firing = FireState.Firing;
-			Weapon.Fire();
+            LastFireTime += Time.deltaTime;
+            if (LastFireTime > FireTime)
+            {
+                LastFireTime -= FireTime;
+
+                GameObject bullet = Instantiate(BulletObject, transform.position, Quaternion.identity) as GameObject;
+                bullet.rigidbody.velocity = new Vector3(-500 * Sprite.scale.x + rigidbody.velocity.x, 0, 0);
+
+                Firing = FireState.Firing;
+            } 
 		}
 		
 		

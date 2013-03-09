@@ -20,14 +20,6 @@ public class Player : MonoBehaviour
     public enum JumpState { Ready, Jumping, Falling };
     private JumpState CurrentJumpState = JumpState.Ready;
 
-    // Weapons //
-    public Weapon Weapon;
-    public float FireTime = 0.2f;
-    float LastFireTime = 0;
-    public GameObject BulletObject;
-    public enum FireState { Idle, Firing };
-    public FireState Firing = FireState.Idle;
-
     
     //============================================================================================================================================================================================//
     public void Awake()
@@ -121,22 +113,6 @@ public class Player : MonoBehaviour
 			
 			JumpCurrentHoldTime = 0;
 		}
-
-        // Firing //
-        //if (Input.GetButtonDown("Fire1"))
-        if (Input.GetButton("Fire1"))
-		{
-            LastFireTime += Time.deltaTime;
-            if (LastFireTime > FireTime)
-            {
-                LastFireTime -= FireTime;
-
-                GameObject bullet = Instantiate(BulletObject, transform.position, Quaternion.identity) as GameObject;
-                bullet.rigidbody.velocity = new Vector3(-500 * Sprite.scale.x + rigidbody.velocity.x, 0, 0);
-
-                Firing = FireState.Firing;
-            } 
-		}
 	}
 
     //============================================================================================================================================================================================//
@@ -195,4 +171,11 @@ public class Player : MonoBehaviour
             CurrentJumpState = state;
         }
     }
+	
+	//============================================================================================================================================================================================//
+	public float GetFacingDirection()
+	{
+		System.Diagnostics.Debug.Assert( Sprite.scale.x == 1.0f || Sprite.scale.x == -1.0f, "Direction should be either 1 or -1.");
+		return Sprite.scale.x;
+	}
 }

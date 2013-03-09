@@ -3,8 +3,14 @@ using System.Collections;
 
 public class GameCamera : MonoBehaviour 
 {
+	/// <summary>
+	/// The position the camera is trying to move to.
+	/// </summary>
 	private Vector3 TargetPos = Vector3.zero;
 	
+	/// <summary>
+	/// The speed at which the camera can move per second.
+	/// </summary>
     public float Speed = 10.0f;
 	
     //============================================================================================================================================================================================//

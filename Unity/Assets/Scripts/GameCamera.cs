@@ -17,7 +17,10 @@ public class GameCamera : MonoBehaviour
     void Update()
     {
 		// Follow Player //
-		TargetPos = Game.Instance.Player.transform.position + new Vector3(0, 0, -100);
+		if(Game.Instance != null)
+		{
+			TargetPos = Game.Instance.Player.transform.position + new Vector3(0, 0, -100);
+		}
 		
 		// Slowly move from the current position to the target position.
         transform.position = Vector3.Lerp(transform.position, TargetPos, Time.deltaTime * Speed);

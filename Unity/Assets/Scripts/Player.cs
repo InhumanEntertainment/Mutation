@@ -10,7 +10,7 @@ public class Player : MonoBehaviour
     public float JumpStrength = 2;
     public float MoveStrength = 1;
     public float MoveMaxVelocity = 5;
-    public float XSpeed = 0;
+    public float Direction = 0;
 
     public Vector3 Acceleration;
     public enum FallState { Idle, Falling };
@@ -24,37 +24,129 @@ public class Player : MonoBehaviour
     public enum FireState { Idle, Firing };
     public FireState Firing = FireState.Idle;
 
+    // Touch Controls //
+    public GameObject[] TouchButtons;    
     
     //============================================================================================================================================================================================//
     public void Awake()
     {
         Sprite = GetComponent<tk2dSprite>();
+
+        if (!Input.multiTouchEnabled)
+        {
+            for (int i = 0; i < TouchButtons.Length; i++)
+            {
+                TouchButtons[i].SetActive(false);
+            }
+        }
     }
     
     //============================================================================================================================================================================================//
     public void Update()
 	{
-		// Touch Controller //
-		// Buttons, Bounds, Down, Up, Move, 
-		// Direction, A, B //
-		// for each button check bounds, 
-		// for direction get analog value on x axis
-	
+        bool Jump = false;
+        bool Fire = false;
+        Direction = 0;
 
+        if (Input.multiTouchEnabled)
+        {
+            // Touch Controls //
+            for (int buttonIndex = 0; buttonIndex < TouchButtons.Length; buttonIndex++)
+            {
+                if (Input.multiTouchEnabled)
+                {
+                    for (int touchIndex = 0; touchIndex < Input.touchCount; ++touchIndex)
+                    {
+                        
+                        Touch touch = Input.GetTouch(touchIndex);
+                        Ray ray = Camera.main.ScreenPointToRay(touch.position);
+                        RaycastHit hit;
 
+                        if (TouchButtons[buttonIndex].collider.Raycast(ray, out hit, 1.0e8f))
+                        {
 
+                            if (TouchButtons[buttonIndex].name == "DPad")
+                            {
+                                float scale = Screen.height / 180f; // Difference between target and actual screen size //
+                                float offsetX = Camera.main.WorldToScreenPoint(hit.collider.transform.position).x; // Into Screen Sapce //
+                                float mouseX = touch.position.x;
+                                float axisX = -(offsetX - mouseX) / 40 / scale; // Into Button Space //
 
+                                Direction = axisX;
 
+                                print("Touch Pos: " + axisX);
+                            }
+                            else if (TouchButtons[buttonIndex].name == "BButton" && touch.phase == TouchPhase.Began)
+                            {
+                                Jump = true;
+
+                                print("B Button: ");
+                            }
+                            else if (TouchButtons[buttonIndex].name == "AButton")
+                            {
+                                Fire = true;
+
+                                print("A Button: ");
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            /*bool Touching = Input.GetMouseButton(0);
+            bool TouchDown = Input.GetMouseButtonDown(0);
+            bool TouchUp = Input.GetMouseButtonUp(0);
+
+            if (Touching)
+            {
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastHit hit;
+                if (TouchButtons[buttonIndex].collider.Raycast(ray, out hit, 1.0e8f))
+                {
+                    if (TouchButtons[buttonIndex].name == "DPad")
+                    {
+                        float scale = Screen.height / 180f; // Difference between target and actual screen size //
+                        float offsetX = Camera.main.WorldToScreenPoint(hit.collider.transform.position).x; // Into Screen Sapce //
+                        float mouseX = Input.mousePosition.x;
+                        float axisX = -(offsetX - mouseX) / 40 / scale; // Into Button Space //
+
+                        XSpeed = axisX;       
+
+                        print("Touch Pos: " + axisX);  
+                    }
+                    else
+                    {
+                        print("Touch Move: " + hit.collider);
+                    }                      
+                }
+                else
+                {
+                    if (TouchButtons[buttonIndex].name == "DPad")
+                    {
+                        XSpeed = 0;
+                    }
+                }
+            }
+            else if (TouchUp)
+            {
+                XSpeed = 0;
+            }*/
+
+            // Controls //
+            Direction = Input.GetAxis("Horizontal");
+            Jump = Input.GetButtonDown("Jump");
+            Fire = Input.GetButton("Fire1");
+        }
 
         // Moving //
-        XSpeed = Input.GetAxis("Horizontal");
-        if (Mathf.Abs(XSpeed) > 0.01f)
+        if (Mathf.Abs(Direction) > 0.01f)
         {
-            //print("Controls: Moving - " + XSpeed);
-            Vector3 force = new Vector3(XSpeed * MoveStrength, 0, 0);
+            Vector3 force = new Vector3(Direction * MoveStrength, 0, 0);
             rigidbody.AddForce(force);
 
-            if (XSpeed < 0)
+            if (Direction < 0)
                 Sprite.scale = new Vector3(.1f, Sprite.scale.y, Sprite.scale.z);
             else
                 Sprite.scale = new Vector3(-.1f, Sprite.scale.y, Sprite.scale.z);
@@ -66,23 +158,17 @@ public class Player : MonoBehaviour
             rigidbody.velocity = new Vector3(MoveMaxVelocity, rigidbody.velocity.y, 0);
 
         // Jumping //
-		if(Falling != FallState.Falling)
-		{
-            if (Input.GetButtonDown("Jump"))
-			{
-                print("Controls: Jump");
-			
-				Falling = FallState.Falling;
-                rigidbody.position += new Vector3(0, 2, 0);
-				rigidbody.velocity += new Vector3(0, JumpStrength, 0);
-				//Sprite.Play("Jumping");
-			}	
-		}
+        if (Falling != FallState.Falling && Jump)
+        {
+            Falling = FallState.Falling;
+            rigidbody.position += new Vector3(0, 2, 0);
+            rigidbody.velocity += new Vector3(0, JumpStrength, 0);
+            //Sprite.Play("Jumping");
+        }
 
         // Firing //
-        //if (Input.GetButtonDown("Fire1"))
-        if (Input.GetButton("Fire1"))
-		{
+        if (Fire)
+        {
             LastFireTime += Time.deltaTime;
             if (LastFireTime > FireTime)
             {
@@ -92,11 +178,12 @@ public class Player : MonoBehaviour
                 bullet.rigidbody.velocity = new Vector3(-500 * Sprite.scale.x + rigidbody.velocity.x, 0, 0);
 
                 Firing = FireState.Firing;
-            } 
-		}
-		
-		
-		
+            }
+        }
+
+
+
+
 		// Fallings Animation //
         if (Mathf.Abs(rigidbody.velocity.y) > 2)
         {

@@ -47,7 +47,6 @@ public class Bullet : MonoBehaviour
             if (hit.collider != null)
             {
                 Destroy(gameObject);
-                print(hit.collider);
 
                 if (FX != null)
                 {

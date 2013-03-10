@@ -207,20 +207,16 @@ public class Player : MonoBehaviour
 		}
 	}
 	
+	//============================================================================================================================================================================================//
 	void OnGUI()
 	{
 		//GUI.Label(new Rect (5, 5, 500, 50), "Dynamic: " + collider.material.dynamicFriction);
 		//GUI.Label(new Rect (5, 20, 500, 50), "Static: " + collider.material.staticFriction);
+		//GUI.Label(new Rect (5, 35, 500, 50), "Jump: " + CurrentJumpState.ToString());
 	}
 
     //============================================================================================================================================================================================//
     void OnCollisionEnter(Collision collisionInfo)
-    {
-		OnCollisionCommon(collisionInfo);
-    }
-
-    //============================================================================================================================================================================================//
-    void OnCollisionStay(Collision collisionInfo)
     {
 		OnCollisionCommon(collisionInfo);
     }
@@ -245,6 +241,7 @@ public class Player : MonoBehaviour
 			// Did we hit something below us (eg. a floor)?
 			if(contact.point.y < transform.position.y)
 			{
+				print ("Setting to rdy");
 				CurrentJumpState = JumpState.Ready;
 				CurrentAirJumpCount = 0;
 			}

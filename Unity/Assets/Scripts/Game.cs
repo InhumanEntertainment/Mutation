@@ -49,6 +49,8 @@ public class Level
 public class GameScreen
 {
     public string Name = "Default";
+    public GameObject AnimObject;
+    public string AnimName;
 }
 
 // Classes 

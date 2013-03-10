@@ -19,13 +19,24 @@ public class GameCurve : MonoBehaviour
     public int GridSize = 40;
 
     //======================================================================================================================================//
+    void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+
+        for (int i = 0; i < Vertex.Count - 1; i++)
+        {
+            Gizmos.DrawLine(Vertex[i], Vertex[i + 1]);
+        }
+    }
+
+    //======================================================================================================================================//
     void OnDrawGizmos()
     {
         Gizmos.color = Color.white;
 
         for (int i = 0; i < Vertex.Count - 1; i++)
         {
-            Debug.DrawLine(Vertex[i], Vertex[i + 1]);
+            Gizmos.DrawLine(Vertex[i], Vertex[i + 1]);
         }
     }
 }

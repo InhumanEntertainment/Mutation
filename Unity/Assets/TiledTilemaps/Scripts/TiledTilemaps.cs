@@ -107,8 +107,13 @@ public class TiledTilemaps : MonoBehaviour
 	public Material[] TilesetsMaterials;
 
     private XmlDocument _xml;
-	
-    private bool LoadTiledXML()
+
+
+    // Collision //
+    List<List<Vector2>> CollisionCurves = new List<List<Vector2>>();
+
+    //============================================================================================================================================//
+    bool LoadTiledXML()
     {
         try {
             _xml.LoadXml(_tiledXMLFile.text);
@@ -122,8 +127,9 @@ public class TiledTilemaps : MonoBehaviour
 		
         return false;
     }
-	
-	void Awake()
+
+    //============================================================================================================================================//
+    void Awake()
 	{
 		if(meshObject == null)
 		{
@@ -131,12 +137,9 @@ public class TiledTilemaps : MonoBehaviour
 			_xml = new XmlDocument();			
 			mainCamera = Camera.mainCamera;
 		}
-	}
-	
-    void Start()
-    {
-    }
+	}   
 
+    //============================================================================================================================================//
     void ImportTiledXML()
     {		
         if(LoadTiledXML())
@@ -156,6 +159,15 @@ public class TiledTilemaps : MonoBehaviour
 				
 				XmlNodeList tilesetsNodes = _xml.DocumentElement.SelectNodes("tileset");
 				XmlNodeList layersNodes = _xml.DocumentElement.SelectNodes("layer");
+
+
+                LoadCollisionXML();
+
+
+
+
+
+
 				
 				XmlNode subNode = null;
 				XmlNode subSubNode = null;
@@ -222,7 +234,6 @@ public class TiledTilemaps : MonoBehaviour
 					
 					layer.gids = new int[tilemapWidth, tilemapHeight];
 
-                    print(gidsNodes.Count);
 					for (int gi = 0; gi < gidsNodes.Count; gi++)
 					{	
 						layer.gids[gidRow,gidColumn] = System.Convert.ToInt32(gidsNodes[gi].Attributes["gid"].Value);
@@ -258,7 +269,8 @@ public class TiledTilemaps : MonoBehaviour
 			}
 		}
     }
-
+    
+    //============================================================================================================================================//
     void Update()
     {   
 		if(reloadAndCommit)
@@ -302,8 +314,9 @@ public class TiledTilemaps : MonoBehaviour
 			if (reloadAndCommit) reloadAndCommit = false;
         }		
     }
-	
-	void GenerateTilemap()
+
+    //============================================================================================================================================//
+    void GenerateTilemap()
 	{		
 		if(meshObject.GetComponent<MeshFilter>() != null) {
 			DestroyImmediate(meshObject.GetComponent<MeshFilter>());
@@ -454,10 +467,132 @@ public class TiledTilemaps : MonoBehaviour
 		
 		if(_generateMeshCollider)
 		{
-			meshCollider.sharedMesh = null;
-			meshCollider.sharedMesh = mesh;
+            BuildCollision();
+
+           
 		}
 		
 		meshRenderer.materials = TilesetsMaterials;
 	}
+
+    //============================================================================================================================================//
+    void LoadCollisionXML()
+    {
+        CollisionCurves.Clear();
+
+        // Collision Loading //
+        XmlNodeList ObjectGroups = _xml.DocumentElement.SelectNodes("objectgroup");
+        for (int groupIndex = 0; groupIndex < ObjectGroups.Count; ++groupIndex)
+        {
+            XmlNodeList Objects = ObjectGroups[groupIndex].SelectNodes("object");
+            for (int objectIndex = 0; objectIndex < Objects.Count; ++objectIndex)
+            {
+                List<Vector2> curvePoints = new List<Vector2>();
+
+                int x = System.Convert.ToInt32(Objects[objectIndex].Attributes["x"].Value);
+                int y = System.Convert.ToInt32(Objects[objectIndex].Attributes["y"].Value);
+
+                // Rectangle + Ellipse //
+                if (Objects[objectIndex].Attributes.Count > 2)
+                {
+                    int w = System.Convert.ToInt32(Objects[objectIndex].Attributes["width"].Value);
+                    int h = System.Convert.ToInt32(Objects[objectIndex].Attributes["height"].Value);
+
+                    if (Objects[objectIndex].ChildNodes.Count > 0)
+                    {
+                        for (int i = 0; i < 370; i += 10)
+                        {
+                            float xx = Mathf.Cos(i * Mathf.Deg2Rad) * w * 0.5f + (w * 0.5f) + x;
+                            float yy = Mathf.Sin(i * Mathf.Deg2Rad) * h * 0.5f + (h * 0.5f) + y;
+                            curvePoints.Add(new Vector2(xx, yy * -1) * scale);                       
+                        }
+                    }
+                    else
+                    {
+                        curvePoints.Add(new Vector2(x, -y) * scale);
+                        curvePoints.Add(new Vector2(x + w, -y) * scale);
+                        curvePoints.Add(new Vector2(x + w, -y - h) * scale);
+                        curvePoints.Add(new Vector2(x, -y - h) * scale);
+                        curvePoints.Add(new Vector2(x, -y) * scale);
+                    }
+                }
+                // Polygon + Polyline //
+                else
+                {
+                    XmlNode node = Objects[objectIndex].FirstChild;
+                    string text = node.Attributes["points"].Value;
+                    string[] points = text.Split(new string[] { " " }, StringSplitOptions.None);
+                    Vector3[] Line = new Vector3[points.Length];
+
+                    foreach (string point in points)
+                    {
+                        string[] xy = point.Split(',');
+                        Vector2 v = new Vector2(x + float.Parse(xy[0]), -1f * (y + float.Parse(xy[1]))) * scale;
+                        curvePoints.Add(v);
+                    }
+
+                    if (node.Name == "polygon")
+                    {
+                        string[] xy = points[0].Split(',');
+                        Vector2 v = new Vector2(x + float.Parse(xy[0]), -1f * (y + float.Parse(xy[1]))) * scale;
+                        curvePoints.Add(v);
+                    }
+                }
+
+                CollisionCurves.Add(curvePoints);
+            }
+        }
+    }
+
+    //============================================================================================================================================//
+    void BuildCollision()
+    {
+        List<Vector3> AllVertices = new List<Vector3>();
+        List<int> AllTriangles = new List<int>();
+
+        for (int curveIndex = 0; curveIndex < CollisionCurves.Count; curveIndex++)
+        {
+            List<Vector2> points = CollisionCurves[curveIndex];
+            int offset = AllVertices.Count;
+
+            // Generate Vertices //
+            for (int i = 0; i < points.Count; i++)
+            {
+                float yOffset = scale * tileHeight;
+                Vector3 vfront = new Vector3(points[i].x, points[i].y + yOffset, -5f);
+                Vector3 vback = new Vector3(points[i].x, points[i].y + yOffset, 5f);
+
+                AllVertices.Add(vfront);
+                AllVertices.Add(vback);
+            }
+
+            // Generate Triangles //
+            for (int i = 0; i < points.Count - 1; i++)
+            {
+                short t1 = (short)(i * 2);
+                short t2 = (short)(i * 2 + 1);
+                short t3 = (short)(i * 2 + 2);
+                short t4 = (short)(i * 2 + 3);
+
+                AllTriangles.Add(t1 + offset);
+                AllTriangles.Add(t2 + offset);
+                AllTriangles.Add(t3 + offset);
+
+                AllTriangles.Add(t3 + offset);
+                AllTriangles.Add(t2 + offset);
+                AllTriangles.Add(t4 + offset);
+            }
+        }
+
+        Vector3[] CollisionVertices = AllVertices.ToArray();
+        int[] CollisionTriangles = AllTriangles.ToArray();
+
+        Mesh collisionmesh = new Mesh();
+        collisionmesh.vertices = CollisionVertices;
+        collisionmesh.triangles = CollisionTriangles;
+        collisionmesh.RecalculateBounds();
+
+        meshCollider.sharedMesh = null;
+        meshCollider.sharedMesh = collisionmesh;
+    }
 }

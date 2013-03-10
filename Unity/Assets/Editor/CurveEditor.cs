@@ -217,11 +217,11 @@ class CurveEditor : Editor
     {
         GameCurve Mesh = (GameCurve)target;
 
-        Color drawcolor = Color.white;
+        Color drawcolor = Color.yellow;
 
         for (int i = 0; i < Mesh.Vertex.Count - 1; i++)
         {
-            drawcolor = i == SelectedEdge ? Color.red : Color.white;
+            drawcolor = i == SelectedEdge ? Color.red : Color.yellow;
             Debug.DrawLine(Mesh.Vertex[i], Mesh.Vertex[i + 1], drawcolor);        
         }
     }

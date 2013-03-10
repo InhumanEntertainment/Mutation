@@ -11,3 +11,5 @@
 /Unity/Temp
 /Build
 *.pidb
+
+*.userprefs

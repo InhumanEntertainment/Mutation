@@ -206,36 +206,36 @@ public class Player : MonoBehaviour
 			JumpCurrentHoldTime = 0;
 		}
 	}
+	
+	void OnGUI()
+	{
+		//GUI.Label(new Rect (5, 5, 500, 50), "Dynamic: " + collider.material.dynamicFriction);
+		//GUI.Label(new Rect (5, 20, 500, 50), "Static: " + collider.material.staticFriction);
+	}
 
     //============================================================================================================================================================================================//
     void OnCollisionEnter(Collision collisionInfo)
     {
-        foreach (ContactPoint contact in collisionInfo.contacts) 
-		{
-            Debug.DrawRay(contact.point, contact.normal, Color.red);
-            
-			// Did we hit something above us (eg. a ceiling)?
-			if(contact.point.y > transform.position.y)
-			{
-				CurrentJumpState = JumpState.Falling;
-			}
-			
-			// Did we hit something below us (eg. a floor)?
-			if(contact.point.y < transform.position.y)
-			{
-				CurrentJumpState = JumpState.Ready;
-				CurrentAirJumpCount = 0;
-			}
-        }
+		OnCollisionCommon(collisionInfo);
     }
 
     //============================================================================================================================================================================================//
     void OnCollisionStay(Collision collisionInfo)
     {
+		OnCollisionCommon(collisionInfo);
+    }
+	
+	/// <summary>
+	/// Handles the logic common to all OnCollision... functions.
+	/// </summary>
+	/// <param name='collisionInfo'>
+	/// Collision info.
+	/// </param>
+	private void OnCollisionCommon(Collision collisionInfo)
+	{		
         foreach (ContactPoint contact in collisionInfo.contacts) 
 		{
             Debug.DrawRay(contact.point, contact.normal, Color.yellow);
-            
 			// Did we hit something above us (eg. a ceiling)?
 			if(contact.point.y > transform.position.y)
 			{
@@ -249,7 +249,7 @@ public class Player : MonoBehaviour
 				CurrentAirJumpCount = 0;
 			}
         }
-    }
+	}
 
     //============================================================================================================================================================================================//
     public void SetState(JumpState state)

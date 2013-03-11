@@ -547,6 +547,76 @@ public class TiledTilemaps : MonoBehaviour
     //============================================================================================================================================//
     void BuildCollision()
     {
+		// Destroy any collision mesh that might already have been created.
+        int childs = transform.childCount;
+        for (int i = childs - 1; i > 0; i--)
+        {
+			DestroyImmediate(transform.GetChild(i).gameObject);
+            //Destroy(transform.GetChild(i).gameObject);
+        }
+		
+		System.Diagnostics.Debug.Assert(transform.childCount == 0, "Not all colliders were cleaned up before generating new level colliders.");
+		
+		for (int curveIndex = 0; curveIndex < CollisionCurves.Count; curveIndex++)
+		{
+			int[] tris = new int[6] { 0, 1, 2, 2, 1, 3 };
+			
+			List<Vector2> points = CollisionCurves[curveIndex];
+			
+			for (int i = 0; i < points.Count; i++)
+			{
+				List<Vector3> verts = new List<Vector3>();
+			
+				Vector3 start = new Vector3(points[i].x, points[i].y);
+				
+				float yOffset = scale * tileHeight;
+				
+				int index = i;
+                verts.Add(new Vector3(points[index].x, points[index].y + yOffset, -5f) - start);
+                verts.Add(new Vector3(points[index].x, points[index].y + yOffset, 5f) - start);
+				
+				float startY = points[index].y + yOffset;
+				
+				index++;
+				if(index >= points.Count)
+				{
+					index = 0;
+				}
+				
+                verts.Add(new Vector3(points[index].x, points[index].y + yOffset, -5f) - start);
+                verts.Add(new Vector3(points[index].x, points[index].y + yOffset, 5f) - start);
+				
+				float endY = points[index].y + yOffset;
+				
+				Mesh collisionmesh = new Mesh();
+		        collisionmesh.vertices = verts.ToArray();
+		        collisionmesh.triangles = tris;
+		        collisionmesh.RecalculateBounds();
+				collisionmesh.RecalculateNormals();
+				
+				GameObject newObj = new GameObject();
+				
+				newObj.transform.position = start;
+				
+				newObj.AddComponent<MeshCollider>();
+				newObj.GetComponent<MeshCollider>().sharedMesh = collisionmesh;
+				
+				if(startY != endY)
+				{
+					newObj.GetComponent<MeshCollider>().material = (PhysicMaterial)Resources.Load("Materials/Wall");
+					newObj.name = "Wall";
+				}
+				else
+				{
+					newObj.GetComponent<MeshCollider>().material = (PhysicMaterial)Resources.Load("Materials/Floor");
+					newObj.name = "Floor";
+				}
+				
+				newObj.transform.parent = this.transform;
+			}
+		}
+		
+		/*
         List<Vector3> AllVertices = new List<Vector3>();
         List<int> AllTriangles = new List<int>();
 
@@ -594,5 +664,8 @@ public class TiledTilemaps : MonoBehaviour
 
         meshCollider.sharedMesh = null;
         meshCollider.sharedMesh = collisionmesh;
+		
+		meshCollider.material = (PhysicMaterial)Resources.Load("Materials/Floor");
+		*/
     }
 }

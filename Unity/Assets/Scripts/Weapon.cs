@@ -6,7 +6,7 @@ using System.Text;
 
 public class Weapon : MonoBehaviour
 {
-    public Player Player;
+    public PlayerController2d Player;
     public tk2dAnimatedSprite MuzzleSprite;
     public GameObject ShellCasing;
     public Vector2 ShellCasingOffset;
@@ -69,7 +69,7 @@ public class Weapon : MonoBehaviour
 	public void Awake()
 	{
 		FiringDelay = 1.0f / RateOfFire;
-        Player = transform.parent.GetComponent<Player>();		
+        Player = transform.parent.GetComponent<PlayerController2d>();		
 	}
 
     //============================================================================================================================================================================================//
@@ -186,7 +186,7 @@ public class Weapon : MonoBehaviour
 		float finalSpeed = BulletSpeed * speedRand;
 		
 		Vector3 finalVel = new Vector3(
-            finalDir.x * finalSpeed + Player.rigidbody.velocity.x, 
+            finalDir.x * finalSpeed,// + Player.rigidbody.velocity.x, 
 			finalDir.y * finalSpeed, 
 			0);
 

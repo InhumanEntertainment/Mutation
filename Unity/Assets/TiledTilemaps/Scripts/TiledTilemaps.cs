@@ -571,7 +571,7 @@ public class TiledTilemaps : MonoBehaviour
                 verts.Add(new Vector3(points[index].x, points[index].y + yOffset, -5f) - start);
                 verts.Add(new Vector3(points[index].x, points[index].y + yOffset, 5f) - start);
 				
-				float startY = points[index].y + yOffset;
+				float startX = points[index].x;
 				
 				index++;
 				if(index >= points.Count)
@@ -582,7 +582,7 @@ public class TiledTilemaps : MonoBehaviour
                 verts.Add(new Vector3(points[index].x, points[index].y + yOffset, -5f) - start);
                 verts.Add(new Vector3(points[index].x, points[index].y + yOffset, 5f) - start);
 				
-				float endY = points[index].y + yOffset;
+				float endX = points[index].x;
 				
 				Mesh collisionmesh = new Mesh();
 		        collisionmesh.vertices = verts.ToArray();
@@ -597,7 +597,7 @@ public class TiledTilemaps : MonoBehaviour
 				newObj.AddComponent<MeshCollider>();
 				newObj.GetComponent<MeshCollider>().sharedMesh = collisionmesh;
 				
-				if(startY != endY)
+				if(startX == endX)
 				{
 					newObj.GetComponent<MeshCollider>().material = (PhysicMaterial)Resources.Load("Materials/Wall");
 					newObj.name = "Wall";

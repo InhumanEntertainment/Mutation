@@ -25,15 +25,15 @@ public class Player : MonoBehaviour
    
     // Gamepad Controls //
     public float ControlDirection = 0;
-    bool ControlJump = false;
-    bool ControlFire = false;
+    public bool ControlJump = false;
+    public bool ControlFire = false;
     
     //============================================================================================================================================================================================//
     public void Awake()
     {
         Sprite = GetComponent<tk2dAnimatedSprite>();
 
-        if (!Input.multiTouchEnabled)
+        if (!(Application.platform == RuntimePlatform.IPhonePlayer || Application.platform == RuntimePlatform.Android))
         {
             for (int i = 0; i < TouchButtons.Length; i++)
             {
@@ -49,7 +49,7 @@ public class Player : MonoBehaviour
         ControlFire = false;
         ControlDirection = 0;
 
-        if (Input.multiTouchEnabled)
+        if (Application.platform == RuntimePlatform.IPhonePlayer || Application.platform == RuntimePlatform.Android)
         {
             // Touch Controls //
             for (int buttonIndex = 0; buttonIndex < TouchButtons.Length; buttonIndex++)

@@ -54,41 +54,36 @@ public class Player : MonoBehaviour
             // Touch Controls //
             for (int buttonIndex = 0; buttonIndex < TouchButtons.Length; buttonIndex++)
             {
-                if (Input.multiTouchEnabled)
+                for (int touchIndex = 0; touchIndex < Input.touchCount; ++touchIndex)
                 {
-                    for (int touchIndex = 0; touchIndex < Input.touchCount; ++touchIndex)
+                    Touch touch = Input.GetTouch(touchIndex);
+                    Ray ray = Camera.main.ScreenPointToRay(touch.position);
+                    RaycastHit hit;
+
+                    if (TouchButtons[buttonIndex].collider.Raycast(ray, out hit, 1.0e8f))
                     {
-
-                        Touch touch = Input.GetTouch(touchIndex);
-                        Ray ray = Camera.main.ScreenPointToRay(touch.position);
-                        RaycastHit hit;
-
-                        if (TouchButtons[buttonIndex].collider.Raycast(ray, out hit, 1.0e8f))
+                        if (TouchButtons[buttonIndex].name == "DPad")
                         {
+                            float scale = Screen.height / 180f; // Difference between target and actual screen size //
+                            float offsetX = Camera.main.WorldToScreenPoint(hit.collider.transform.position).x; // Into Screen Sapce //
+                            float mouseX = touch.position.x;
+                            float axisX = -(offsetX - mouseX) / 40 / scale; // Into Button Space //
 
-                            if (TouchButtons[buttonIndex].name == "DPad")
-                            {
-                                float scale = Screen.height / 180f; // Difference between target and actual screen size //
-                                float offsetX = Camera.main.WorldToScreenPoint(hit.collider.transform.position).x; // Into Screen Sapce //
-                                float mouseX = touch.position.x;
-                                float axisX = -(offsetX - mouseX) / 40 / scale; // Into Button Space //
+                            ControlDirection = axisX;
 
-                                ControlDirection = axisX;
+                            print("Touch Pos: " + axisX);
+                        }
+                        else if (TouchButtons[buttonIndex].name == "BButton" && touch.phase == TouchPhase.Began)
+                        {
+                            ControlJump = true;
 
-                                print("Touch Pos: " + axisX);
-                            }
-                            else if (TouchButtons[buttonIndex].name == "BButton" && touch.phase == TouchPhase.Began)
-                            {
-                                ControlJump = true;
+                            print("B Button: ");
+                        }
+                        else if (TouchButtons[buttonIndex].name == "AButton")
+                        {
+                            ControlFire = true;
 
-                                print("B Button: ");
-                            }
-                            else if (TouchButtons[buttonIndex].name == "AButton")
-                            {
-                                ControlFire = true;
-
-                                print("A Button: ");
-                            }
+                            print("A Button: ");
                         }
                     }
                 }

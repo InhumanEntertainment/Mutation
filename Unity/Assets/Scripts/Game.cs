@@ -18,9 +18,6 @@ public class Game : MonoBehaviour
     void Awake()
     {
         Instance = this;
-
-        //Time.timeScale = 1.0f;
-        //Time.fixedDeltaTime = 0.02f * Time.timeScale;
 	}
 
     //============================================================================================================================================================================================//
@@ -29,8 +26,7 @@ public class Game : MonoBehaviour
         if (TargetFramerate != Application.targetFrameRate)
         {
             Application.targetFrameRate = TargetFramerate;
-        }
-	
+        }	
 	}
 
     //============================================================================================================================================================================================//
@@ -45,7 +41,6 @@ public class Game : MonoBehaviour
     }
 }
 
-
 public class Level
 {
     public string Name = "Default";
@@ -57,40 +52,6 @@ public class GameScreen
     public GameObject AnimObject;
     public string AnimName;
 }
-
-// Classes 
-// Player, Weapon, Projectile, Ammo, Health, Score, Inventory, Enemy, Camera, Controls, 
-
-//====================================//
-// Controls
-//====================================//
-// Touch Direction 
-// Touch Fire
-// Touch Jump
-// Keyboard/Gamepad Direction
-// Keyboard/GamePad Jump
-// Keyboard/GamePad Fire
-//====================================//
-// Camera 
-//====================================//
-// Follow Player
-// Possible Attractors
-// Possible Zooming/Shaking
-//====================================//
-// Levels 
-//====================================//
-// Test Tile Setups
-// 9 Levels
-//====================================//
-// AWESOME!!! 
-//====================================//
-// Grenades Blowing guys away based on radius/direction
-// Pixel Gibblets
-// Big Creatures with animations
-// Rocket Pack
-// 
-
-
 
 
 

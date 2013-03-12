@@ -102,7 +102,7 @@ public class Weapon : MonoBehaviour
 		PerformChargeFlicker();
 		
 		// The player taps the button to fire bullets as fast as possible.
-        if (Input.GetButtonUp("Fire1"))
+        if (Input.GetButton("Fire1"))
 		{
 			// Has enough time passed that we can fire another bullet?
             if (TimeSinceLastFire > FiringDelay)

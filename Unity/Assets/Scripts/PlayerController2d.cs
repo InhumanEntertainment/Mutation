@@ -6,7 +6,7 @@ using System.Collections;
 [RequireComponent (typeof (tk2dAnimatedSprite))]
 public class PlayerController2d : MonoBehaviour 
 {
-	private struct ControllerInfo
+	public struct ControllerInfo
 	{
 		public bool JumpPressed;
 		
@@ -218,7 +218,7 @@ public class PlayerController2d : MonoBehaviour
 		return transform.localScale.x;
 	}
 	
-	private ControllerInfo GetControllerInfo()
+	public ControllerInfo GetControllerInfo()
 	{
 		ControllerInfo cont = new ControllerInfo();
 		
@@ -268,7 +268,7 @@ public class PlayerController2d : MonoBehaviour
 			
 			cont.JumpPressed = Input.GetButtonDown("Jump");
 			
-			cont.FirePressed = Input.GetButtonDown("Fire1");
+			cont.FirePressed = Input.GetButton("Fire1");
 		}
 		
 		return cont;

@@ -83,7 +83,7 @@ public class Weapon : MonoBehaviour
 		// back to 0.
         TimeSinceLastFire += Time.deltaTime;
 		
-		if (Player.ControlFire)
+		if (Player.GetControllerInfo().FirePressed)
 		{
 			CurrentChargeTime += Time.deltaTime;
 		}
@@ -102,7 +102,7 @@ public class Weapon : MonoBehaviour
 		PerformChargeFlicker();
 		
 		// The player taps the button to fire bullets as fast as possible.
-        if (Player.ControlFire)
+        if (Player.GetControllerInfo().FirePressed)
 		{
 			// Has enough time passed that we can fire another bullet?
             if (TimeSinceLastFire > FiringDelay)

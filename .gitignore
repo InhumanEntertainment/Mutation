@@ -13,3 +13,7 @@
 *.pidb
 
 *.userprefs
+
+*.csproj
+
+*.unityproj

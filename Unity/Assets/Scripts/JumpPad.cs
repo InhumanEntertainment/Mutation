@@ -9,25 +9,24 @@ public class JumpPad : MonoBehaviour
     //======================================================================================================================================//
     void OnCollisionEnter(Collision collision)
     {
-        collision.collider.rigidbody.velocity = -collision.contacts[0].normal * Strength;
-        Debug.DrawLine(collision.contacts[0].point, collision.contacts[0].point - collision.contacts[0].normal * 3);
-
-        Debug.DrawLine(collision.contacts[0].point, collision.contacts[0].point + collision.collider.rigidbody.velocity.normalized * 3);
-
-        if (animation != null)
-        {
-            //animation.Play();
-        }
+        Jump(collision);
     }
 
     //======================================================================================================================================//
     void OnCollisionStay(Collision collision)
     {
-        // Stop Movement //
-        if (collision.collider.gameObject.tag == "Player")
+        Jump(collision);
+    }
+
+    //======================================================================================================================================//
+    void Jump(Collision collision)
+    {
+        //collision.collider.rigidbody.velocity = -collision.contacts[0].normal * Strength;
+        collision.collider.rigidbody.velocity = Vector3.up * Strength;
+
+        if (animation != null)
         {
-            //Debug.DrawLine(collision.contacts[0].point, collision.contacts[0].point - collision.contacts[0].normal * 3);
-            Debug.DrawLine(collision.contacts[0].point, collision.contacts[0].point + collision.collider.rigidbody.velocity.normalized * 3);
+            //animation.Play();
         }
     }
 }

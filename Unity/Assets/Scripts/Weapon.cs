@@ -1,12 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 public class Weapon : MonoBehaviour
 {
+    public Player Player;
+    public tk2dAnimatedSprite MuzzleSprite;
+    public GameObject ShellCasing;
+    public Vector2 ShellCasingOffset;
+
 	/// <summary>
 	/// The number of bullets fired per second.
 	/// </summary>
@@ -29,11 +33,6 @@ public class Weapon : MonoBehaviour
 	private float CurrentChargeTime = 0.0f;
 	
 	/// <summary>
-	/// Needed for randomizing some bullet data.
-	/// </summary>
-	private System.Random Rand;
-	
-	/// <summary>
 	/// The speed at which a bullet moves per scond.
 	/// </summary>
 	public float BulletSpeed = 100.0f;
@@ -42,6 +41,11 @@ public class Weapon : MonoBehaviour
 	/// The type of object that will be spawned as a Bullet when this Weapon fires.
 	/// </summary>
     public GameObject BulletObjectTemplate;
+
+    /// <summary>
+    /// Position at which the bullets will spawn from
+    /// </summary>
+    public Vector2 BulletSpawnOffset;
 	
 	/// <summary>
 	/// Little hack to get the color to flicker when a shot is charged.
@@ -58,13 +62,14 @@ public class Weapon : MonoBehaviour
 	/// store the current charge profile here.
 	/// </summary>
 	private ChargeShotProfile CurrentChargeShotProfile;
+
+    
 	
 	//============================================================================================================================================================================================//
 	public void Awake()
 	{
 		FiringDelay = 1.0f / RateOfFire;
-		
-		Rand = new System.Random();
+        Player = transform.parent.GetComponent<Player>();		
 	}
 
     //============================================================================================================================================================================================//
@@ -73,8 +78,8 @@ public class Weapon : MonoBehaviour
 #if UNITY_EDITOR
 		FiringDelay = 1.0f / RateOfFire;
 #endif
-		
-		// Time is always increasing, but the code below has a chance to reset it 
+
+        // Time is always increasing, but the code below has a chance to reset it 
 		// back to 0.
         TimeSinceLastFire += Time.deltaTime;
 		
@@ -108,7 +113,7 @@ public class Weapon : MonoBehaviour
 				
 				if(CurrentChargeShotProfile != null)
 				{
-					float dir = GetPlayerDirection();
+					float dir = -GetPlayerDirection();
 					
 					for(int i = 0; i < CurrentChargeShotProfile.NumBullets; i++)
 					{
@@ -133,13 +138,11 @@ public class Weapon : MonoBehaviour
 	/// </returns>
 	private float GetPlayerDirection()
 	{				
-		Player player = GetComponent<Player>();
-		
 		float dir = 1;
 		
-		if(player != null)
+		if(Player != null)
 		{
-			dir = player.GetFacingDirection();
+			dir = Player.GetFacingDirection();
 		}
 
 		return dir;
@@ -156,13 +159,14 @@ public class Weapon : MonoBehaviour
 	/// </param>
 	private void FireBullet(float spread, float speedVariance)
 	{		
-		float angleRand = (float)Rand.NextDouble();
+		float angleRand = Random.value;
+        float direction = GetPlayerDirection();
 		
 		float angle = 0.0f;
 		
-		if(GetPlayerDirection() > 0.0f)
+		if(direction < 0.0f)
 		{
-			angle = (float)Math.PI;
+			angle = Mathf.PI;
 		}
 		
 		spread *= Mathf.Deg2Rad;
@@ -171,24 +175,36 @@ public class Weapon : MonoBehaviour
 		float offset = (angleRand * spread) - (spread * 0.5f);
 		angle += offset;
 		
-		Vector3 finalDir = new Vector3((float)Math.Cos(angle), (float)Math.Sin(angle), 0.0f);
+		Vector3 finalDir = new Vector3((float)Mathf.Cos(angle), (float)Mathf.Sin(angle), 0.0f);
 		
 		float min = 1.0f - (speedVariance * 0.5f);
 		float max = 1.0f + (speedVariance * 0.5f);
 		
 		// Get an random number between min->max
-		float speedRand = (float)(max + Rand.NextDouble() * (min - max));
+		float speedRand = max + Random.value * (min - max);
 		
 		float finalSpeed = BulletSpeed * speedRand;
 		
 		Vector3 finalVel = new Vector3(
-			finalDir.x * finalSpeed + rigidbody.velocity.x, 
+            finalDir.x * finalSpeed + Player.rigidbody.velocity.x, 
 			finalDir.y * finalSpeed, 
 			0);
-		
-		GameObject bullet = Instantiate(BulletObjectTemplate, transform.position, Quaternion.identity) as GameObject;
+
+        Vector3 spawnPosition = transform.position + new Vector3(BulletSpawnOffset.x * direction, BulletSpawnOffset.y, 0);
+        GameObject bullet = Instantiate(BulletObjectTemplate, spawnPosition, Quaternion.identity) as GameObject;
 
 		bullet.rigidbody.velocity = finalVel;
+        bullet.transform.localScale = new Vector3(direction, 1, 1);
+
+        // Play FX //
+        MuzzleSprite.Play();
+
+        Vector3 shellPosition = transform.position + new Vector3(ShellCasingOffset.x * direction, ShellCasingOffset.y, 0);
+        GameObject casing = Instantiate(ShellCasing, shellPosition, Quaternion.identity) as GameObject;
+        casing.rigidbody.velocity = Vector3.zero;
+        casing.rigidbody.angularVelocity = new Vector3(0, 0, Random.value * 100 - 50);
+        casing.rigidbody.AddForce(10 * Random.value - 5, 5 * Random.value + 10, 0);
+
 	}
 	
 	/// <summary>

@@ -5,6 +5,7 @@ public class Game : MonoBehaviour
 {
     static public Game Instance;
 
+    public int TargetFramerate = 60;
     public Player Player;
     public Level[] Levels;
     public int Score;
@@ -25,6 +26,10 @@ public class Game : MonoBehaviour
     //============================================================================================================================================================================================//
     void Update()
     {
+        if (TargetFramerate != Application.targetFrameRate)
+        {
+            Application.targetFrameRate = TargetFramerate;
+        }
 	
 	}
 

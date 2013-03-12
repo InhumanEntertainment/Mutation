@@ -3,7 +3,7 @@ using System.Collections;
 
 public class Player : MonoBehaviour 
 {
-    public tk2dSprite Sprite;
+    public tk2dAnimatedSprite Sprite;
     public int Health = 100;
 
     // Movement //
@@ -14,19 +14,24 @@ public class Player : MonoBehaviour
 	private int CurrentAirJumpCount = 0;
     public float MoveStrength = 1;
     public float MoveMaxVelocity = 5;
-    public float Direction = 0;
-
+    
     public Vector3 Acceleration;
     public enum JumpState { Ready, Jumping, Falling };
-    private JumpState CurrentJumpState = JumpState.Ready;
+    public JumpState CurrentJumpState = JumpState.Ready;
+    public bool OnGround = false;
 
     // Touch Controls //
-    public GameObject[] TouchButtons;    
+    public GameObject[] TouchButtons; 
+   
+    // Gamepad Controls //
+    public float ControlDirection = 0;
+    bool ControlJump = false;
+    bool ControlFire = false;
     
     //============================================================================================================================================================================================//
     public void Awake()
     {
-        Sprite = GetComponent<tk2dSprite>();
+        Sprite = GetComponent<tk2dAnimatedSprite>();
 
         if (!Input.multiTouchEnabled)
         {
@@ -39,10 +44,10 @@ public class Player : MonoBehaviour
     
     //============================================================================================================================================================================================//
     public void Update()
-	{
-        bool Jump = false;
-        bool Fire = false;
-        Direction = 0;
+    {
+        ControlJump = false;
+        ControlFire = false;
+        ControlDirection = 0;
 
         if (Input.multiTouchEnabled)
         {
@@ -53,7 +58,7 @@ public class Player : MonoBehaviour
                 {
                     for (int touchIndex = 0; touchIndex < Input.touchCount; ++touchIndex)
                     {
-                        
+
                         Touch touch = Input.GetTouch(touchIndex);
                         Ray ray = Camera.main.ScreenPointToRay(touch.position);
                         RaycastHit hit;
@@ -68,19 +73,19 @@ public class Player : MonoBehaviour
                                 float mouseX = touch.position.x;
                                 float axisX = -(offsetX - mouseX) / 40 / scale; // Into Button Space //
 
-                                Direction = axisX;
+                                ControlDirection = axisX;
 
                                 print("Touch Pos: " + axisX);
                             }
                             else if (TouchButtons[buttonIndex].name == "BButton" && touch.phase == TouchPhase.Began)
                             {
-                                Jump = true;
+                                ControlJump = true;
 
                                 print("B Button: ");
                             }
                             else if (TouchButtons[buttonIndex].name == "AButton")
                             {
-                                Fire = true;
+                                ControlFire = true;
 
                                 print("A Button: ");
                             }
@@ -91,61 +96,31 @@ public class Player : MonoBehaviour
         }
         else
         {
-            /*bool Touching = Input.GetMouseButton(0);
-            bool TouchDown = Input.GetMouseButtonDown(0);
-            bool TouchUp = Input.GetMouseButtonUp(0);
-
-            if (Touching)
-            {
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                RaycastHit hit;
-                if (TouchButtons[buttonIndex].collider.Raycast(ray, out hit, 1.0e8f))
-                {
-                    if (TouchButtons[buttonIndex].name == "DPad")
-                    {
-                        float scale = Screen.height / 180f; // Difference between target and actual screen size //
-                        float offsetX = Camera.main.WorldToScreenPoint(hit.collider.transform.position).x; // Into Screen Sapce //
-                        float mouseX = Input.mousePosition.x;
-                        float axisX = -(offsetX - mouseX) / 40 / scale; // Into Button Space //
-
-                        XSpeed = axisX;       
-
-                        print("Touch Pos: " + axisX);  
-                    }
-                    else
-                    {
-                        print("Touch Move: " + hit.collider);
-                    }                      
-                }
-                else
-                {
-                    if (TouchButtons[buttonIndex].name == "DPad")
-                    {
-                        XSpeed = 0;
-                    }
-                }
-            }
-            else if (TouchUp)
-            {
-                XSpeed = 0;
-            }*/
-
-            // Controls //
-            Direction = Input.GetAxis("Horizontal");
-            Jump = Input.GetButtonDown("Jump");
-            Fire = Input.GetButton("Fire1");
+            ControlDirection = Input.GetAxis("Horizontal");
+            ControlJump = Input.GetButtonDown("Jump");
+            ControlFire = Input.GetButton("Fire1");
         }
-
+    }
+        
+    //============================================================================================================================================================================================//
+    public void FixedUpdate()
+	{
         // Moving //
-        if (Mathf.Abs(Direction) > 0.01f)
+        if (Mathf.Abs(ControlDirection) > 0.01f)
         {
-            Vector3 force = new Vector3(Direction * MoveStrength, 0, 0);
+            Vector3 force = new Vector3(ControlDirection * MoveStrength, 0, 0);
             rigidbody.AddForce(force);
 
-            if (Direction < 0)
-                Sprite.scale = new Vector3(.1f, Sprite.scale.y, Sprite.scale.z);
+            if (ControlDirection < 0)
+            {
+                if (transform.localScale.x != -1)
+                    transform.localScale = new Vector3(-1, 1, 1);
+            }
             else
-                Sprite.scale = new Vector3(-.1f, Sprite.scale.y, Sprite.scale.z);
+            {
+                if (transform.localScale.x != 1)
+                    transform.localScale = new Vector3(1, 1, 1);
+            }
         }
 
         if (rigidbody.velocity.x < -MoveMaxVelocity)
@@ -155,7 +130,7 @@ public class Player : MonoBehaviour
 		
 		// Check if the Jump button is being held. Inside this block it will make sure it is
 		// a valid time to press it.
-        if (Jump)
+        if (ControlJump)
 		{
 			// Regardless of whether or not we actually jumping this frame, the button is being
 			// pressed, and thus the timer should be increased.
@@ -179,7 +154,7 @@ public class Player : MonoBehaviour
 
 					rigidbody.velocity = new Vector3(rigidbody.velocity.x, JumpStrength, rigidbody.velocity.z);
 					
-					//Sprite.Play("Jumping");
+					Sprite.Play("Kevin_Jump");
 				}
 			}
 			else
@@ -191,6 +166,7 @@ public class Player : MonoBehaviour
 				if(CurrentJumpState == JumpState.Jumping)
 				{
 					CurrentJumpState = JumpState.Falling;
+                    PlayAnimation("Kevin_Jump");
 				}
 			}
 		}
@@ -201,11 +177,53 @@ public class Player : MonoBehaviour
 			if(CurrentJumpState == JumpState.Jumping)
 			{
 				CurrentJumpState = JumpState.Falling;
+                PlayAnimation("Kevin_Jump");
 			}
 			
 			JumpCurrentHoldTime = 0;
 		}
+
+        Vector3 playerBottom = transform.position + new Vector3(0, .5f, 0);
+        Ray groundRay = new Ray(playerBottom, Vector3.down);
+        RaycastHit belowHit = new RaycastHit();
+
+        OnGround = false;
+        if (Physics.Raycast(groundRay, out belowHit))
+        {
+            CurrentJumpState = JumpState.Ready;
+            //Debug.DrawRay(belowHit.point, belowHit.normal, Color.cyan);
+            
+            if (Vector3.Distance(playerBottom, belowHit.point) < 1.5f)
+            {
+                Debug.DrawLine(playerBottom, belowHit.point, Color.green);
+
+                OnGround = true;
+                CurrentJumpState = JumpState.Ready;
+                if (Mathf.Abs(ControlDirection) > 0f)
+                    PlayAnimation("Kevin_Run");
+                else
+                    PlayAnimation("Kevin_Idle");                
+            }
+            else
+            {
+                Debug.DrawLine(playerBottom, belowHit.point, Color.red);
+
+                OnGround = false;
+                CurrentJumpState = JumpState.Falling;
+                PlayAnimation("Kevin_Jump");
+            }
+        }
 	}
+
+    
+    //============================================================================================================================================================================================//
+    void PlayAnimation(string name)
+    {
+        if (name != Sprite.CurrentClip.name)
+        {
+            Sprite.Play(name);
+        }
+    }
 	
 	//============================================================================================================================================================================================//
 	void OnGUI()
@@ -243,7 +261,7 @@ public class Player : MonoBehaviour
 			//if(contact.otherCollider.material.name == "Floor (Instance)")
 			if(contact.normal.y > 0.9f)
 			{
-				print ("Setting to rdy");
+				//print ("Setting to rdy");
 				CurrentJumpState = JumpState.Ready;
 				CurrentAirJumpCount = 0;
 			}
@@ -266,7 +284,7 @@ public class Player : MonoBehaviour
 	//============================================================================================================================================================================================//
 	public float GetFacingDirection()
 	{
-		System.Diagnostics.Debug.Assert( Sprite.scale.x == 1.0f || Sprite.scale.x == -1.0f, "Direction should be either 1 or -1.");
-		return Sprite.scale.x;
+        System.Diagnostics.Debug.Assert(transform.localScale.x == -1.0f || transform.localScale.x == 1.0f, "Direction should be either 1 or -1.");
+		return transform.localScale.x;
 	}
 }

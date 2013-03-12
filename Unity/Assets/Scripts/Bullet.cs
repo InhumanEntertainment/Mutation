@@ -48,6 +48,11 @@ public class Bullet : MonoBehaviour
             {
                 Destroy(gameObject);
 
+                if (hit.collider.rigidbody != null)
+                {
+                    hit.collider.rigidbody.AddForceAtPosition(rigidbody.velocity * 100, hit.point);
+                }               
+
                 if (FX != null)
                 {
                     //float angle = Mathf.Atan2(hit.normal.y, hit.normal.x) * Mathf.Rad2Deg;

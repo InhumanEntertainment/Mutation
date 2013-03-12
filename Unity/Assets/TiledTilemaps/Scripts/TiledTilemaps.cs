@@ -225,26 +225,19 @@ public class TiledTilemaps : MonoBehaviour
 					subNode = layersNodes[layerId];
 					
 					TilelayerData layer = new TilelayerData();
-					layer.name = subNode.Attributes["name"].Value;
-					
-					XmlNodeList gidsNodes = subNode.SelectNodes("data/tile");				
-	
-					int gidRow = 0;
-					int gidColumn = 0;
-					
-					layer.gids = new int[tilemapWidth, tilemapHeight];
+					layer.name = subNode.Attributes["name"].Value;					
+					XmlNodeList gidsNodes = subNode.SelectNodes("data/tile");										
+					layer.gids = new int[tilemapHeight, tilemapWidth];
 
-					for (int gi = 0; gi < gidsNodes.Count; gi++)
-					{	
-						layer.gids[gidRow,gidColumn] = System.Convert.ToInt32(gidsNodes[gi].Attributes["gid"].Value);
-						gidColumn++;
-						
-						if((gi+1) % tilemapWidth == 0)
-						{
-							gidRow++;	
-							gidColumn = 0;
-						}					
-					}
+                    int index = 0;
+                    for (int y = 0; y < tilemapHeight; y++)
+                    {
+                        for (int x = 0; x < tilemapWidth; x++)
+                        {
+                            layer.gids[y, x] = System.Convert.ToInt32(gidsNodes[index].Attributes["gid"].Value);
+                            index++;
+                        }
+                    }
 					
 					layers.Add(layer);
 				}
@@ -293,12 +286,14 @@ public class TiledTilemaps : MonoBehaviour
 				
 				for (int i = 0; i < TilesetsTextures.Length; i++)
 				{
-					if(TilesetsTextures[i] == null) {
+					if(TilesetsTextures[i] == null) 
+                    {
 						generate = false;
 						break;
 					}
 					
-					if(TilesetsMaterials[i] != null) {
+					if(TilesetsMaterials[i] != null) 
+                    {
 						DestroyImmediate(TilesetsMaterials[i]);
 						TilesetsMaterials[i] = null;
 					}
@@ -372,7 +367,8 @@ public class TiledTilemaps : MonoBehaviour
 					float textureWidth = tileset.imagewidth;
 					float textureHeight = tileset.imageheight;
 					
-					if(!submeshesTriangles.ContainsKey(tilesetId)) {
+					if(!submeshesTriangles.ContainsKey(tilesetId)) 
+                    {
 						submeshesTriangles.Add(tilesetId, new List<int>());
 					}
 					
@@ -563,7 +559,7 @@ public class TiledTilemaps : MonoBehaviour
 			
 			List<Vector2> points = CollisionCurves[curveIndex];
 			
-			for (int i = 0; i < points.Count; i++)
+			for (int i = 0; i < points.Count - 1; i++)
 			{
 				List<Vector3> verts = new List<Vector3>();
 			

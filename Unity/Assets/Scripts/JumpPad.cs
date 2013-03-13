@@ -29,4 +29,13 @@ public class JumpPad : MonoBehaviour
             //animation.Play();
         }
     }
+
+    //======================================================================================================================================//
+    public float LaunchStrength
+    {
+        get
+        {
+            return Strength;
+        }
+    }
 }

@@ -6,22 +6,15 @@ using System.Collections;
 [RequireComponent (typeof(tk2dAnimatedSprite))]
 public class PlayerController2d : MonoBehaviour
 {
+    /// <summary>
+    /// Wraps controller information for a frame to abstract things like
+    /// touch controls.
+    /// </summary>
     public struct ControllerInfo
     {
         public bool JumpPressed;
         public bool FirePressed;
         public Vector3 XAxis;
-     
-        /*
-     public ControllerInfo()
-     {
-         JumpPressed = false;
-         
-         FirePressed = false;
-         
-         XAxis = new Vector3();
-     }
-     */
     }
  
     /// <summary>
@@ -52,9 +45,21 @@ public class PlayerController2d : MonoBehaviour
     public float PushPower = 6.0f;
  
     /// <summary>
-    /// The direction this object is moving on a given frame.
+    /// The direction that the object wants to move this frame, not worrying about things
+    /// like acceleration and deceleration.
     /// </summary>
-    private Vector3 MoveDirection = new Vector3 ();
+    private Vector3 WantedVelocity = new Vector3();
+
+    /// <summary>
+    /// The current velocity at the end of a FixedUpdate frame. Used for blending velocity
+    /// over time.
+    /// </summary>
+    private Vector3 CurrentVelocity = new Vector3();
+
+    /// <summary>
+    /// Slight hack to allow things like JumpPads to launch the object into the air.
+    /// </summary>
+    private Vector3 LaunchVelocity = Vector3.zero;
  
     /// <summary>
     /// Tracks when the jump button is pressed, so that the FixedUpdate
@@ -71,7 +76,7 @@ public class PlayerController2d : MonoBehaviour
     /// <summary>
     /// Touch controls.
     /// </summary>
-    public GameObject[] TouchButtons; 
+    public GameObject[] TouchButtons;
  
     //============================================================================================================================================================================================//
     void Awake ()
@@ -94,27 +99,11 @@ public class PlayerController2d : MonoBehaviour
 
         if (Controller.isGrounded)
         {
-            if (info.XAxis.x == 0)
-            {
-                // If the user is not pressing in a direction, stop moving but over a
-                // number of frames.
-                MoveDirection = Vector3.Lerp(MoveDirection, Vector3.zero, Time.deltaTime * 10.0f);
+            WantedVelocity = info.XAxis;
+            WantedVelocity = transform.TransformDirection(WantedVelocity);
+            WantedVelocity *= Speed;
 
-                // If we try to actually reach 0 it will take a long time, so just clamp it at a
-                // certain point.
-                if(Mathf.Abs(MoveDirection.x) < 1.0f)
-                {
-                    MoveDirection = Vector3.zero;
-                }
-            }
-            else
-            {
-                MoveDirection = info.XAxis;
-                MoveDirection = transform.TransformDirection(MoveDirection);
-                MoveDirection *= Speed;
-            }
-
-            if (MoveDirection != Vector3.zero)
+            if (WantedVelocity != Vector3.zero)
             {
                 PlayAnimation("Kevin_Run");
             }
@@ -124,7 +113,7 @@ public class PlayerController2d : MonoBehaviour
             }
 
             JumpCount = 0;
-         
+
             if (info.JumpPressed)
             {
                 JumpPressed = true;
@@ -142,26 +131,26 @@ public class PlayerController2d : MonoBehaviour
                 }
             }
          
-            MoveDirection.x = info.XAxis.x;
-            MoveDirection.x *= Speed;
+            WantedVelocity.x = info.XAxis.x;
+            WantedVelocity.x *= Speed;
         }
     }
  
     //============================================================================================================================================================================================//
     void FixedUpdate ()
     {
-        if (MoveDirection.x < 0)
+        if (WantedVelocity.x < 0)
         {
             if (transform.localScale.x != -1)
             {
-                transform.localScale = new Vector3 (-1, 1, 1);
+                transform.localScale = new Vector3(-1, 1, 1);
             }
         }
-        else if (MoveDirection.x > 0)
+        else if (WantedVelocity.x > 0)
         {
             if (transform.localScale.x != 1)
             {
-                transform.localScale = new Vector3 (1, 1, 1);
+                transform.localScale = new Vector3(1, 1, 1);
             }
         }
      
@@ -169,21 +158,46 @@ public class PlayerController2d : MonoBehaviour
         {
             Jump();
         }
-     
-        MoveDirection.y += Physics.gravity.y * Time.deltaTime;
-     
-        Controller.Move(MoveDirection * Time.fixedDeltaTime);
+
+        WantedVelocity.y += Physics.gravity.y * Time.deltaTime;
+
+        // If the player is trying to move horizontally, slowly bring them to a stop.
+        if (Mathf.Abs(WantedVelocity.x) < Mathf.Epsilon)
+        {
+            // If the user is not pressing in a direction, stop moving but over a
+            // number of frames.
+            WantedVelocity.x = Mathf.Lerp(CurrentVelocity.x, 0.0f, Time.deltaTime * 10.0f);
+
+            // If we try to actually reach 0 it will take a long time, so just clamp it at a
+            // certain point.
+            if (Mathf.Abs(WantedVelocity.x) < 1.0f)
+            {
+                WantedVelocity.x = 0.0f;
+            }
+        }
+
+        Controller.Move(WantedVelocity * Time.fixedDeltaTime);
+
+        // Store the velocity that was set, and save it for next frame.
+        CurrentVelocity = WantedVelocity;
      
         // The character controller doesn't seem to have a way to lock the object
         // to a plane (like Rigid Bodies do). So sometimes when it gets pushed around by
         // collisions, it ends up slightly of the XY plane. This puts it back.
-        transform.position = new Vector3 (transform.position.x, transform.position.y, 0);
+        transform.position = new Vector3(transform.position.x, transform.position.y, 0);
     }
 
     //============================================================================================================================================================================================//
     void Jump ()
     {
-        MoveDirection.y = (JumpCount == 0) ? JumpSpeed : JumpSpeed * AirJumpMod;
+        WantedVelocity.y = (JumpCount == 0) ? JumpSpeed : JumpSpeed * AirJumpMod;
+
+        if (LaunchVelocity != Vector3.zero)
+        {
+            WantedVelocity = LaunchVelocity;
+            LaunchVelocity = Vector3.zero;
+        }
+
         JumpCount++;
         JumpPressed = false;
     }
@@ -206,6 +220,21 @@ public class PlayerController2d : MonoBehaviour
     /// </param>
     void OnControllerColliderHit (ControllerColliderHit hit)
     {
+        // Special case handling for JumpPad objects.
+        if (hit.gameObject.tag == "JumpPad")
+        {
+            // Allow the player to launch even if not on the ground so that we can put
+            // them on walls and stuff.
+            //if (Controller.isGrounded)
+            {
+                // Just do a normal jump but with an overwriten jump velocity.
+                JumpPressed = true;
+                LaunchVelocity = hit.gameObject.transform.up * hit.gameObject.GetComponent<JumpPad>().Strength;
+            }
+
+            return;
+        }
+
         Rigidbody body = hit.collider.attachedRigidbody;
   
         // no rigidbody
@@ -222,7 +251,7 @@ public class PlayerController2d : MonoBehaviour
   
         // Calculate push direction from move direction,
         // we only push objects to the sides never up and down
-        var pushDir = new Vector3 (hit.moveDirection.x, 0, 0);
+        var pushDir = new Vector3(hit.moveDirection.x, 0, 0);
   
         // If you know how fast your character is trying to move,
         // then you can also multiply the push velocity by that.
@@ -237,10 +266,11 @@ public class PlayerController2d : MonoBehaviour
         System.Diagnostics.Debug.Assert(transform.localScale.x == -1.0f || transform.localScale.x == 1.0f, "Direction should be either 1 or -1.");
         return transform.localScale.x;
     }
- 
+
+    //============================================================================================================================================================================================//
     public ControllerInfo GetControllerInfo ()
     {
-        ControllerInfo cont = new ControllerInfo ();
+        ControllerInfo cont = new ControllerInfo();
 
         if (Application.platform == RuntimePlatform.IPhonePlayer || Application.platform == RuntimePlatform.Android)
         {
@@ -284,7 +314,7 @@ public class PlayerController2d : MonoBehaviour
         }
         else
         {
-            cont.XAxis = new Vector3 (Input.GetAxis("Horizontal"), 0, 0);
+            cont.XAxis = new Vector3(Input.GetAxis("Horizontal"), 0, 0);
          
             cont.JumpPressed = Input.GetButtonDown("Jump");
          

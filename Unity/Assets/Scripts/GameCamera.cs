@@ -1,6 +1,14 @@
 using UnityEngine;
 using System.Collections;
 
+[System.Serializable]
+public class ResolutionOverride
+{
+    public string Name;
+    public int ScreenHeight;
+    public int TargetHeight;
+}
+
 public class GameCamera : MonoBehaviour 
 {
 	/// <summary>
@@ -16,13 +24,36 @@ public class GameCamera : MonoBehaviour
     public Vector2 ClampMax = new Vector2(10000, 10000);
     public bool PixelPerfect = true;
 
-    // Pixel Perfect Resolution //
+    /*// Pixel Perfect Resolution //
     public float TargetScale = 0;
     public int TargetHeight = 160;
     public int ScreenHeight = 720;
     public int ScreenWidth = 1280;
-    public Vector2 Resolution;
+    public Vector2 Resolution;*/
+
+    // Screen Resolution Overrides
+    public float UnitScale = 10;
+    public int DefaultTargetHeight = 160;
+    public ResolutionOverride[] Resolutions;
 	
+    //============================================================================================================================================================================================//
+    void Awake()
+    {
+        float targetHeight = DefaultTargetHeight;
+
+        foreach (ResolutionOverride resolution in Resolutions)
+        {
+            if (Screen.height == resolution.ScreenHeight)
+            {
+                //print("Fount Override: " + resolution.ScreenHeight + " : " + resolution.TargetHeight);
+                targetHeight = resolution.TargetHeight;
+            }
+        }
+
+        camera.orthographicSize = targetHeight / UnitScale / 2;
+        print("Resolution: " + Screen.height + " -> " + targetHeight + " - Scale: " + Screen.height / targetHeight);
+    }
+    
     //============================================================================================================================================================================================//
     void FixedUpdate()
     {
@@ -51,7 +82,7 @@ public class GameCamera : MonoBehaviour
     }
 
     //============================================================================================================================================================================================//
-    void FindPerfectResolution()
+    /*void FindPerfectResolution()
     {
         if (ScreenHeight > TargetHeight)
         {
@@ -70,5 +101,5 @@ public class GameCamera : MonoBehaviour
             }
             while (remainder > 0);
         }
-    }
+    }*/
 }

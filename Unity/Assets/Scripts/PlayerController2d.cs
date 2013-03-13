@@ -38,11 +38,6 @@ public class PlayerController2d : MonoBehaviour
 	public float JumpSpeed = 37.0f;
 	
 	/// <summary>
-	/// The force pulling the object back down.
-	/// </summary>
-	public float Gravity = 100.0f;
-	
-	/// <summary>
 	/// Tracks how many times this object has jumped since the last time
 	/// it was gounded.
 	/// </summary>
@@ -80,7 +75,7 @@ public class PlayerController2d : MonoBehaviour
 	{
 		Controller = GetComponent<CharacterController>();
 
-        if (!Input.multiTouchEnabled)
+        if (!(Application.platform == RuntimePlatform.IPhonePlayer || Application.platform == RuntimePlatform.Android))
         {
             for (int i = 0; i < TouchButtons.Length; i++)
             {
@@ -156,7 +151,7 @@ public class PlayerController2d : MonoBehaviour
 			Jump();
 		}
 		
-		MoveDirection.y -= Gravity * Time.deltaTime;
+		MoveDirection.y += Physics.gravity.y * Time.deltaTime;
 		
 		Controller.Move(MoveDirection * Time.fixedDeltaTime);
 		
@@ -221,8 +216,8 @@ public class PlayerController2d : MonoBehaviour
 	public ControllerInfo GetControllerInfo()
 	{
 		ControllerInfo cont = new ControllerInfo();
-		
-		if (Input.multiTouchEnabled)
+
+        if (Application.platform == RuntimePlatform.IPhonePlayer || Application.platform == RuntimePlatform.Android)
         {
             // Touch Controls //
             for (int buttonIndex = 0; buttonIndex < TouchButtons.Length; buttonIndex++)
@@ -237,10 +232,10 @@ public class PlayerController2d : MonoBehaviour
                     {
                         if (TouchButtons[buttonIndex].name == "DPad")
                         {
-                            float scale = Screen.height / 180f; // Difference between target and actual screen size //
+                            float scale = Screen.height / (Camera.main.orthographicSize * 20); // Difference between target and actual screen size //
                             float offsetX = Camera.main.WorldToScreenPoint(hit.collider.transform.position).x; // Into Screen Sapce //
                             float mouseX = touch.position.x;
-                            float axisX = -(offsetX - mouseX) / 40 / scale; // Into Button Space //
+                            float axisX = -(offsetX - mouseX) / 40 / scale; // Into Button Space, 40 is half of button width //
 
                             cont.XAxis.x = axisX;
 

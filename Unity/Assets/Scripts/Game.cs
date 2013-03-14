@@ -35,7 +35,10 @@ public class Game : MonoBehaviour
         Instance = this;
 		Application.targetFrameRate = TargetFramerate;
 
-        CurrentScreen = Screens[0];
+        if(Screens.Length > 0)
+        {
+            CurrentScreen = Screens[0];
+        }
 	}
 
     //============================================================================================================================================================================================//
@@ -57,8 +60,11 @@ public class Game : MonoBehaviour
             Player = Instantiate(PlayerPrefab, checkpoint, Quaternion.identity) as GameObject;
             Camera.main.transform.position = Player.transform.position;
 
-            LoadingLevel = false; 
-            DoorTransition.Play("Doors_Open");           
+            LoadingLevel = false;
+            if(DoorTransition != null)
+            {
+                DoorTransition.Play("Doors_Open");
+            }
         }
 	}
 
@@ -103,7 +109,10 @@ public class Game : MonoBehaviour
             CurrentScreen = screen;
 
             // Play Transition //
-            DoorTransition.Play("Doors_Close");
+            if(DoorTransition != null)
+            {
+                DoorTransition.Play("Doors_Close");
+            }
         }
     }
 

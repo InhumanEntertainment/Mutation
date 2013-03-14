@@ -65,6 +65,7 @@ public class Bullet : MonoBehaviour
                 if(h != null)
                 {
                     h.ApplyDamage(Damage);
+					Game.Instance.Data.Score += 100;
                 }
 
                 if (FX != null)

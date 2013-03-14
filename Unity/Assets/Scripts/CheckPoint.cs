@@ -27,7 +27,8 @@ public class CheckPoint : MonoBehaviour
             }
             else
             {
-                // Save for continue //
+                // Save for Continue //
+				Game.Instance.Data.CurrentCheckPoint = name;
             }
         }      
     } 

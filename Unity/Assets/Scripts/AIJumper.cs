@@ -1,9 +1,8 @@
 using UnityEngine;
-
 using System.Collections;
 
 [RequireComponent (typeof(Health))]
-public class AIWalker : CharacterController2D
+public class AIJumper : CharacterController2D
 {
     /// <summary>
     /// Helpers for tracking which direction this object is moving in.
@@ -13,11 +12,15 @@ public class AIWalker : CharacterController2D
         Left = -1,
         Right = 1,
     };
+
+    public float MaxDistance;
     
     /// <summary>
     /// The direction this object is currently moving.
     /// </summary>
     private Direction Dir = Direction.Left;
+
+    public float PounceSpeed = 15.0f;
 
     //============================================================================================================================================================================================//
     protected override void Awake ()
@@ -30,21 +33,42 @@ public class AIWalker : CharacterController2D
     {
         base.Update();
 
+        if(GetComponent<Health>().IsDead())
+        {
+            return;
+        }
+
         // If there is no ground in front of us, turn around.
         if (IsApporachingEdge ())
         {
             Dir = (Direction)((int)Dir * -1);
         }
 
-        if(Controller.isGrounded && !GetComponent<Health>().IsDead())
+        if(Controller.isGrounded)
         {
             // Move in the direction we are facing, forever...
             WantedVelocity = new Vector3 ((int)Dir * Speed, 0, 0);
+
+            if(Vector3.Distance(Game.Instance.Player.transform.position, transform.position) < MaxDistance)
+            {
+                JumpPressed = true;
+            }
         }
         else
         {
-            WantedVelocity = Vector3.zero;
+
+            if(Vector3.Distance(Game.Instance.Player.transform.position, transform.position) < MaxDistance)
+            {
+                Vector3 dirToPlayer = Game.Instance.Player.transform.position - transform.position;
+
+                WantedVelocity.x = dirToPlayer.normalized.x * PounceSpeed;
+            }
+            else
+            {
+                WantedVelocity.x = 0;
+            }
         }
+
     }
 
     //============================================================================================================================================================================================//
@@ -58,7 +82,7 @@ public class AIWalker : CharacterController2D
     {
         if(GetComponent<Health>().IsDead())
         {
-            PlayAnimation("Walker_Death");
+            PlayAnimation("Jumper_Death");
 
             // Prevent any collisions from occuring after he is dead.
             Controller.enabled = false;
@@ -70,18 +94,16 @@ public class AIWalker : CharacterController2D
         {
             if (Mathf.Abs(CurrentVelocity.x) >= Mathf.Epsilon)
             {
-                PlayAnimation("Walker_Walk");
+                PlayAnimation("Jumper_Run");
             }
             else
             {
-                PlayAnimation("Walker_Idle");
+                PlayAnimation("Jumper_Idle");
             }
         }
         else
         {
-            // TODO
-            // Insert jump animation here.
-            PlayAnimation("Walker_Jump");
+            PlayAnimation("Jumper_Jump");
         }
     }
 

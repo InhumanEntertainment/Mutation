@@ -2,6 +2,7 @@ using UnityEngine;
 
 using System.Collections;
 
+[RequireComponent (typeof(Health))]
 public class AIWalker : CharacterController2D
 {
     /// <summary>

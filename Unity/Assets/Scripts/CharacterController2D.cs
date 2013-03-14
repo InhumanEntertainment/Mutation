@@ -4,7 +4,7 @@ using System.Collections;
 
 [RequireComponent (typeof(CharacterController))]
 [RequireComponent (typeof(tk2dAnimatedSprite))]
-public class CharacterController2D : MonoBehaviour
+public abstract class CharacterController2D : MonoBehaviour
 {
     /// <summary>
     /// The speed at which this object moves per second.
@@ -143,30 +143,13 @@ public class CharacterController2D : MonoBehaviour
     }
 
     //============================================================================================================================================================================================//
-    protected void ChooseAnimation()
-    {
-        if(Controller.isGrounded)
-        {
-            if (Mathf.Abs(CurrentVelocity.x) >= Mathf.Epsilon)
-            {
-                PlayAnimation("Kevin_Run");
-            }
-            else
-            {
-                PlayAnimation("Kevin_Idle");
-            }
-        }
-        else
-        {
-            PlayAnimation("Kevin_Jump");
-        }
-    }
+    protected abstract void ChooseAnimation();
     
     //============================================================================================================================================================================================//
     protected void PlayAnimation (string name)
     {
         tk2dAnimatedSprite sprite = GetComponent<tk2dAnimatedSprite>();
-        if (sprite && name != sprite.CurrentClip.name)
+        if (sprite && sprite.CurrentClip != null && name != sprite.CurrentClip.name)
         {
             sprite.Play(name);
         }

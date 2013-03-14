@@ -73,6 +73,26 @@ public class PlayerController2d : CharacterController2D
     }
 
     //============================================================================================================================================================================================//
+    protected override void ChooseAnimation()
+    {
+        if(Controller.isGrounded)
+        {
+            if (Mathf.Abs(CurrentVelocity.x) >= Mathf.Epsilon)
+            {
+                PlayAnimation("Kevin_Run");
+            }
+            else
+            {
+                PlayAnimation("Kevin_Idle");
+            }
+        }
+        else
+        {
+            PlayAnimation("Kevin_Jump");
+        }
+    }
+
+    //============================================================================================================================================================================================//
     public ControllerInfo GetControllerInfo ()
     {
         ControllerInfo cont = new ControllerInfo();

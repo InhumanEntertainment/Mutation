@@ -37,7 +37,7 @@ public class AIWalker : CharacterController2D
             Dir = (Direction)((int)Dir * -1);
         }
 
-        if(Controller.isGrounded)
+        if(Controller.isGrounded && !GetComponent<Health>().IsDead())
         {
             // Move in the direction we are facing, forever...
             WantedVelocity = new Vector3 ((int)Dir * Speed, 0, 0);
@@ -52,6 +52,38 @@ public class AIWalker : CharacterController2D
     protected override void FixedUpdate ()
     {
         base.FixedUpdate();
+    }
+
+    //============================================================================================================================================================================================//
+    protected override void ChooseAnimation()
+    {
+        if(GetComponent<Health>().IsDead())
+        {
+            PlayAnimation("Walker_Death");
+
+            return;
+        }
+
+        if(Controller.isGrounded)
+        {
+            if (Mathf.Abs(CurrentVelocity.x) >= Mathf.Epsilon)
+            {
+                // TODO
+                // Insert walk animation here!
+                //
+                PlayAnimation("Walker_Idle");
+            }
+            else
+            {
+                PlayAnimation("Walker_Idle");
+            }
+        }
+        else
+        {
+            // TODO
+            // Insert jump animation here.
+            PlayAnimation("Walker_Idle");
+        }
     }
 
     /// <summary>
@@ -70,7 +102,7 @@ public class AIWalker : CharacterController2D
             // We want the ray cast to go from the front edge of the sprite,
             // to the bottom of the sprite.
             float width = sprite.GetBounds ().extents.x;
-            float height = sprite.GetBounds ().extents.y * 1.2f;
+            float height = sprite.GetBounds ().extents.y * 1.5f;
     
             Vector3 inFront = transform.position;
             inFront.x += (int)Dir * width;

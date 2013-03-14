@@ -25,9 +25,12 @@ public class Game : MonoBehaviour
     public MenuAnimation DoorTransition;
     public Animation GameHud;
     public Animation PauseMenu;
+    public tk2dTextMesh FPSObject;
 
     // Touch Controls //
     public GameObject[] TouchButtons;
+
+    float FPS = 60;
 
     //============================================================================================================================================================================================//
     void Awake()
@@ -48,6 +51,10 @@ public class Game : MonoBehaviour
         {
             Application.targetFrameRate = TargetFramerate;
         }
+
+        FPS = Mathf.Lerp(FPS, Time.deltaTime > 0 ?  1f / Time.deltaTime : 0, 0.05f);
+        FPSObject.text = FPS.ToString("N0");
+        FPSObject.Commit();
 
         // Load Level //
         if (LoadingLevel && !Application.isLoadingLevel)

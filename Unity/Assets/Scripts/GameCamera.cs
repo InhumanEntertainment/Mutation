@@ -58,19 +58,23 @@ public class GameCamera : MonoBehaviour
     void FixedUpdate()
     {
 		// Follow Player //
-		if(Game.Instance != null)
+        if (Game.Instance != null && Game.Instance.Player != null)
 		{
 			TargetPos = Game.Instance.Player.transform.position;
+            TargetPos = new Vector3(Mathf.Clamp(TargetPos.x, ClampMin.x, ClampMax.x), Mathf.Clamp(TargetPos.y, ClampMin.y, ClampMax.y), -100);
+
+            // Slowly move from the current position to the target position.
+            Vector3 newPosition = Vector3.Lerp(transform.position, TargetPos, Time.fixedDeltaTime * Speed);
+            if (PixelPerfect)
+                newPosition = new Vector3(pixify(newPosition.x), pixify(newPosition.y), -100);
+
+            transform.position = newPosition;
 		}
-
-        TargetPos = new Vector3(Mathf.Clamp(TargetPos.x, ClampMin.x, ClampMax.x), Mathf.Clamp(TargetPos.y, ClampMin.y, ClampMax.y), -100);
-
-        // Slowly move from the current position to the target position.
-        Vector3 newPosition = Vector3.Lerp(transform.position, TargetPos, Time.fixedDeltaTime * Speed);
-        if (PixelPerfect)
-            newPosition = new Vector3(pixify(newPosition.x), pixify(newPosition.y), -100);
-
-        transform.position = newPosition;
+        else
+        {
+            TargetPos = new Vector3(0, 0, -100);
+            transform.position = new Vector3(0, 0, -100);
+        }      
 	}
 
     //============================================================================================================================================================================================//

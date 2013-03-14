@@ -21,6 +21,7 @@ public class JumpPad : MonoBehaviour
     //======================================================================================================================================//
     void Jump(Collision collision)
     {
+        print("JumpPad: Jump");
         //collision.collider.rigidbody.velocity = -collision.contacts[0].normal * Strength;
         collision.collider.rigidbody.velocity = Vector3.up * Strength;
 

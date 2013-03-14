@@ -73,11 +73,6 @@ public class PlayerController2d : MonoBehaviour
     /// </summary>
     private CharacterController Controller;
  
-    /// <summary>
-    /// Touch controls.
-    /// </summary>
-    public GameObject[] TouchButtons;
- 
     //============================================================================================================================================================================================//
     void Awake ()
     {
@@ -85,9 +80,9 @@ public class PlayerController2d : MonoBehaviour
 
         if (!(Application.platform == RuntimePlatform.IPhonePlayer || Application.platform == RuntimePlatform.Android))
         {
-            for (int i = 0; i < TouchButtons.Length; i++)
+            for (int i = 0; i < Game.Instance.TouchButtons.Length; i++)
             {
-                TouchButtons [i].SetActive(false);
+                Game.Instance.TouchButtons[i].SetActive(false);
             }
         }
     }
@@ -275,7 +270,7 @@ public class PlayerController2d : MonoBehaviour
         if (Application.platform == RuntimePlatform.IPhonePlayer || Application.platform == RuntimePlatform.Android)
         {
             // Touch Controls //
-            for (int buttonIndex = 0; buttonIndex < TouchButtons.Length; buttonIndex++)
+            for (int buttonIndex = 0; buttonIndex < Game.Instance.TouchButtons.Length; buttonIndex++)
             {
                 for (int touchIndex = 0; touchIndex < Input.touchCount; ++touchIndex)
                 {
@@ -283,9 +278,9 @@ public class PlayerController2d : MonoBehaviour
                     Ray ray = Camera.main.ScreenPointToRay(touch.position);
                     RaycastHit hit;
 
-                    if (TouchButtons [buttonIndex].collider.Raycast(ray, out hit, 1.0e8f))
+                    if (Game.Instance.TouchButtons[buttonIndex].collider.Raycast(ray, out hit, 1.0e8f))
                     {
-                        if (TouchButtons [buttonIndex].name == "DPad")
+                        if (Game.Instance.TouchButtons[buttonIndex].name == "DPad")
                         {
                             float scale = Screen.height / (Camera.main.orthographicSize * 20); // Difference between target and actual screen size //
                             float offsetX = Camera.main.WorldToScreenPoint(hit.collider.transform.position).x; // Into Screen Sapce //
@@ -296,13 +291,13 @@ public class PlayerController2d : MonoBehaviour
 
                             print("Touch Pos: " + axisX);
                         }
-                        else if (TouchButtons [buttonIndex].name == "BButton" && touch.phase == TouchPhase.Began)
+                        else if (Game.Instance.TouchButtons[buttonIndex].name == "BButton" && touch.phase == TouchPhase.Began)
                         {
                             cont.JumpPressed = true;
 
                             print("B Button: ");
                         }
-                        else if (TouchButtons [buttonIndex].name == "AButton")
+                        else if (Game.Instance.TouchButtons[buttonIndex].name == "AButton")
                         {
                             cont.FirePressed = true;
 

@@ -9,7 +9,7 @@ public class AIPounce : MonoBehaviour
 	
 	void Update() 
 	{
-		if(null == Game.Instance)
+        if (null == Game.Instance || Game.Instance.Player == null)
 		{
 			return;
 		}

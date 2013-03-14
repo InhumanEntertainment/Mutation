@@ -10,6 +10,9 @@
 /Unity/Unity.sln
 /Unity/Temp
 /Build
+/Unity/Assets/-tk2d
+/Unity/Assets/Resources/tk2d/*
+
 *.pidb
 
 *.userprefs

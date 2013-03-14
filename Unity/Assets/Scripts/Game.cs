@@ -78,13 +78,20 @@ public class Game : MonoBehaviour
         }
 
         // Update FPS Counter //
-        FPS = Mathf.Lerp(FPS, Time.deltaTime > 0 ?  1f / Time.deltaTime : 0, 0.05f);
-        FPSObject.text = FPS.ToString("N0");
-        FPSObject.Commit();
+        if (FPSObject != null)
+        {
+            FPS = Mathf.Lerp(FPS, Time.deltaTime > 0 ? 1f / Time.deltaTime : 0, 0.05f);
+            FPSObject.text = FPS.ToString("N0");
+            FPSObject.Commit();
+        }       
 
         // Update Score //
-        ScoreText.text = string.Format("{0:n0}", Data.Score);
-        ScoreText.Commit();
+        if (ScoreText != null)
+        {
+            ScoreText.text = string.Format("{0:n0}", Data.Score);
+            ScoreText.Commit();
+        }
+        
 
         // Load Level //
         if (LoadingLevel && !Application.isLoadingLevel)

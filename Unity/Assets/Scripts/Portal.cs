@@ -30,8 +30,10 @@ public class Portal : MonoBehaviour
 
             // Move Object //
             collider.transform.position = SpawnPosition;
-            float mag = collider.rigidbody.velocity.magnitude;
-            collider.rigidbody.velocity = RotationVector(SpawnAngle) * mag;
+
+            collider.GetComponent<PlayerController2d>().WantedVelocity = Vector3.zero;
+            //float mag = collider.rigidbody.velocity.magnitude;
+            //collider.rigidbody.velocity = RotationVector(SpawnAngle) * mag;
         }
     }
 

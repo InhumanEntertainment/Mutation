@@ -37,7 +37,7 @@ public abstract class CharacterController2D : MonoBehaviour
     /// The direction that the object wants to move this frame, not worrying about things
     /// like acceleration and deceleration.
     /// </summary>
-    protected Vector3 WantedVelocity = new Vector3();
+    public Vector3 WantedVelocity = new Vector3();
 
     /// <summary>
     /// The current velocity at the end of a FixedUpdate frame. Used for blending velocity

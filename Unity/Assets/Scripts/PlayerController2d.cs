@@ -24,7 +24,8 @@ public class PlayerController2d : CharacterController2D
         {
             for (int i = 0; i < Game.Instance.TouchButtons.Length; i++)
             {
-                Game.Instance.TouchButtons[i].SetActive(false);
+                if (Game.Instance.TouchButtons[i] != null)
+                    Game.Instance.TouchButtons[i].SetActive(false);               
             }
         }
     }

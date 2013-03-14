@@ -44,12 +44,15 @@ public class Bullet : MonoBehaviour
         float distance = Vector3.Distance(LastPosition, transform.position);
         if (distance > 0)
         {
-            Ray ray = new Ray(LastPosition, transform.position - LastPosition);
+            Vector3 direction = (transform.position - LastPosition).normalized;
+            Vector3 offset = new Vector3(direction.x * 2, 0, 0); // Shift ray back for when enemies are close to you //
+
+            Ray ray = new Ray(LastPosition - offset, direction);
             RaycastHit hit = new RaycastHit();
 
             int layerMask = (1 << 11) | (1 << 0);
 
-            Physics.Raycast(ray, out hit, distance, layerMask);
+            Physics.Raycast(ray, out hit, distance + 2, layerMask);
 
             if (hit.collider != null)
             {

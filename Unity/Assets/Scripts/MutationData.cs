@@ -66,10 +66,9 @@ public class MutationData
 	static string DataPath = Application.persistentDataPath + "/Mutation.xml";
 	
     public MutationSettings Settings = new MutationSettings();	
-	public string CurrentLevel;
-	public string CurrentCheckPoint;
+	public string CurrentLevel = "";
+	public string CurrentCheckPoint = "";
 	public int Score;
-	public int Lives;
 	
     [XmlArray("Levels"), XmlArrayItem("Level")]
     public List<MutationLevel> Levels = new List<MutationLevel>();

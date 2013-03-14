@@ -114,7 +114,10 @@ public abstract class CharacterController2D : MonoBehaviour
             }
         }
 
-        Controller.Move(WantedVelocity * Time.fixedDeltaTime);
+        if(Controller.enabled)
+        {
+            Controller.Move(WantedVelocity * Time.fixedDeltaTime);
+        }
 
         // Store the velocity that was set, and save it for next frame.
         CurrentVelocity = WantedVelocity;

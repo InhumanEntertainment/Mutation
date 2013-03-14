@@ -47,7 +47,7 @@ public class Bullet : MonoBehaviour
             Ray ray = new Ray(LastPosition, transform.position - LastPosition);
             RaycastHit hit = new RaycastHit();
 
-            int layerMask = 1 << 0;
+            int layerMask = (1 << 11) | (1 << 0);
 
             Physics.Raycast(ray, out hit, distance, layerMask);
 
@@ -62,7 +62,6 @@ public class Bullet : MonoBehaviour
 
 
                 Health h = hit.collider.GetComponent<Health>();
-                print(Damage);
                 if(h != null)
                 {
                     h.ApplyDamage(Damage);

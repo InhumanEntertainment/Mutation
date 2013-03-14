@@ -2,8 +2,6 @@ using UnityEngine;
 
 using System.Collections;
 
-[RequireComponent (typeof(CharacterController))]
-[RequireComponent (typeof(tk2dAnimatedSprite))]
 public class PlayerController2d : CharacterController2D
 {
     /// <summary>

@@ -2,8 +2,6 @@ using UnityEngine;
 
 using System.Collections;
 
-[RequireComponent (typeof(CharacterController))]
-[RequireComponent (typeof(tk2dAnimatedSprite))]
 public class AIWalker : CharacterController2D
 {
     /// <summary>
@@ -60,6 +58,9 @@ public class AIWalker : CharacterController2D
         if(GetComponent<Health>().IsDead())
         {
             PlayAnimation("Walker_Death");
+
+            // Prevent any collisions from occuring after he is dead.
+            Controller.enabled = false;
 
             return;
         }

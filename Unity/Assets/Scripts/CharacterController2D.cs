@@ -161,7 +161,7 @@ public abstract class CharacterController2D : MonoBehaviour
     /// <param name='hit'>
     /// The object hit.
     /// </param>
-    protected void OnControllerColliderHit (ControllerColliderHit hit)
+    protected virtual void OnControllerColliderHit (ControllerColliderHit hit)
     {
         // Special case handling for JumpPad objects.
         if (hit.gameObject.tag == "JumpPad")

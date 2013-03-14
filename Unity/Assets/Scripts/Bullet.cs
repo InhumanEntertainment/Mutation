@@ -5,6 +5,7 @@ public class Bullet : MonoBehaviour
 {
     public ParticleSystem FX;
     Vector3 LastPosition;
+    public int Damage;
 
     //============================================================================================================================================================================================//
     /*void OnCollisionEnter(Collision collision)
@@ -57,7 +58,14 @@ public class Bullet : MonoBehaviour
                 if (hit.collider.rigidbody != null)
                 {
                     hit.collider.rigidbody.AddForceAtPosition(rigidbody.velocity * 100, hit.point);
-                }               
+                }
+
+
+                Health h = hit.collider.GetComponent<Health>();
+                if(h != null)
+                {
+                    h.ApplyDamage(Damage);
+                }
 
                 if (FX != null)
                 {

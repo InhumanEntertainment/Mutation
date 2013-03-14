@@ -62,6 +62,7 @@ public class Bullet : MonoBehaviour
 
 
                 Health h = hit.collider.GetComponent<Health>();
+                print(Damage);
                 if(h != null)
                 {
                     h.ApplyDamage(Damage);

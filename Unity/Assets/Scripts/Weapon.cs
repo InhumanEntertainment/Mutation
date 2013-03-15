@@ -191,7 +191,7 @@ public class Weapon : MonoBehaviour
 			0);
 
         Vector3 spawnPosition = transform.position + new Vector3(BulletSpawnOffset.x * direction, BulletSpawnOffset.y, 0);
-        GameObject bullet = Instantiate(BulletObjectTemplate, spawnPosition, Quaternion.identity) as GameObject;
+        GameObject bullet = Game.Spawn(BulletObjectTemplate, spawnPosition, Quaternion.identity) as GameObject;
 
 		bullet.rigidbody.velocity = finalVel;
         bullet.transform.localScale = new Vector3(direction, 1, 1);
@@ -200,7 +200,7 @@ public class Weapon : MonoBehaviour
         MuzzleSprite.Play();
 
         Vector3 shellPosition = transform.position + new Vector3(ShellCasingOffset.x * direction, ShellCasingOffset.y, 0);
-        GameObject casing = Instantiate(ShellCasing, shellPosition, Quaternion.identity) as GameObject;
+        GameObject casing = Game.Spawn(ShellCasing, shellPosition, Quaternion.identity) as GameObject;
         casing.rigidbody.velocity = Vector3.zero;
         casing.rigidbody.angularVelocity = new Vector3(0, 0, Random.value * 100 - 50);
         casing.rigidbody.AddForce(10 * Random.value - 5, 5 * Random.value + 10, 0);

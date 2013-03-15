@@ -50,7 +50,7 @@ public class Spawner : MonoBehaviour
     //============================================================================================================================================================================================//
     void Spawn()
     {
-        GameObject jumper = Instantiate(JumperPrefab, transform.position + SpawnOffset, Quaternion.identity) as GameObject;
+        GameObject jumper = Game.Spawn(JumperPrefab, transform.position + SpawnOffset, Quaternion.identity) as GameObject;
         Vector3 velocity = new Vector3(Mathf.Lerp(MinSpawnSpeed.x, MaxSpawnSpeed.x, Random.value), Mathf.Lerp(MinSpawnSpeed.y, MaxSpawnSpeed.y, Random.value), 0);  
         jumper.GetComponent<AIJumper>().WantedVelocity = velocity;
 

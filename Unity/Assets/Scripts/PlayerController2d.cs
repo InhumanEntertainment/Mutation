@@ -20,13 +20,12 @@ public class PlayerController2d : CharacterController2D
     {
         base.Awake();
 
-        if (!(Application.platform == RuntimePlatform.IPhonePlayer || Application.platform == RuntimePlatform.Android))
+        // Singleton: Destroy all others //
+        Object[] players = FindObjectsOfType(typeof(PlayerController2d));
+        for (int i = 0; i < players.Length; i++)
         {
-            for (int i = 0; i < Game.Instance.TouchButtons.Length; i++)
-            {
-                if (Game.Instance.TouchButtons[i] != null)
-                    Game.Instance.TouchButtons[i].SetActive(false);               
-            }
+            if (players[i] != this)
+                Destroy((players[i] as PlayerController2d).gameObject);            
         }
     }
  

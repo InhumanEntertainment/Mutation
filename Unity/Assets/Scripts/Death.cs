@@ -12,7 +12,7 @@ public class Death : MonoBehaviour
         {
             // Play Effect //
             if(Effect != null)
-                Instantiate(Effect, transform.position, Quaternion.identity);
+                Game.Spawn(Effect, transform.position, Quaternion.identity);
 
             // Goto Last Checkpoint //
         }

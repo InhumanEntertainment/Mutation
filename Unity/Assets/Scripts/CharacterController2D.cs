@@ -61,11 +61,13 @@ public abstract class CharacterController2D : MonoBehaviour
     /// The character controller attached to this object.
     /// </summary>
     protected CharacterController Controller;
+    public Health Health;
  
     //============================================================================================================================================================================================//
     protected virtual void Awake ()
     {
         Controller = GetComponent<CharacterController>();
+        Health = GetComponent<Health>();
     }
 
     //============================================================================================================================================================================================//

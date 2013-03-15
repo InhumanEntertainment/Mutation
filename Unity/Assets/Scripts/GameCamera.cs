@@ -23,6 +23,10 @@ public class GameCamera : MonoBehaviour
     public Vector2 ClampMin = new Vector2(-10000, -10000);
     public Vector2 ClampMax = new Vector2(10000, 10000);
     public bool PixelPerfect = true;
+    public Vector3 PlayerVelocityOffset;
+    public Vector3 PlayerOffset;
+    Vector3 PlayerOffsetSmooth;
+    
 
     /*// Pixel Perfect Resolution //
     public float TargetScale = 0;
@@ -39,6 +43,15 @@ public class GameCamera : MonoBehaviour
     //============================================================================================================================================================================================//
     void Awake()
     {
+        // Singleton: Destroy all others //
+        Object[] cameras = FindObjectsOfType(typeof(GameCamera));
+        if (cameras.Length > 1)
+        {
+            Destroy(this.gameObject);
+            return;
+        }
+
+
         float targetHeight = DefaultTargetHeight;
 
         foreach (ResolutionOverride resolution in Resolutions)
@@ -60,15 +73,18 @@ public class GameCamera : MonoBehaviour
 		// Follow Player //
         if (Game.Instance != null && Game.Instance.Player != null)
 		{
-			TargetPos = Game.Instance.Player.transform.position;
+            // Offset Camera in Players Velocity Direction //
+            Vector3 playerVelocity = Game.Instance.Player.WantedVelocity;
+            Vector3 cameraOffset = Vector3.Scale(playerVelocity, PlayerVelocityOffset);
+            PlayerOffsetSmooth = Vector3.Lerp(PlayerOffsetSmooth, cameraOffset, Time.fixedDeltaTime * Speed);
+
+            TargetPos = Game.Instance.Player.transform.position + PlayerOffsetSmooth + PlayerOffset;
             TargetPos = new Vector3(Mathf.Clamp(TargetPos.x, ClampMin.x, ClampMax.x), Mathf.Clamp(TargetPos.y, ClampMin.y, ClampMax.y), -100);
 
-            // Slowly move from the current position to the target position.
-            Vector3 newPosition = Vector3.Lerp(transform.position, TargetPos, Time.fixedDeltaTime * Speed);
             if (PixelPerfect)
-                newPosition = new Vector3(pixify(newPosition.x), pixify(newPosition.y), -100);
+                TargetPos = new Vector3(pixify(TargetPos.x), pixify(TargetPos.y), -100);
 
-            transform.position = newPosition;
+            transform.position = TargetPos;
 		}
         else
         {

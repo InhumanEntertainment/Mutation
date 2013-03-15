@@ -20,7 +20,7 @@ public class Bullet : MonoBehaviour
             print(angle);
             Quaternion rotation = Quaternion.AngleAxis(angle, Vector3.back);
             rotation.SetLookRotation(collision.contacts[0].normal);
-            Instantiate(FX, transform.position, rotation);
+            Game.Spawn(FX, transform.position, rotation);
 
             
         }
@@ -77,7 +77,7 @@ public class Bullet : MonoBehaviour
                     //print(angle);
                     Quaternion rotation = new Quaternion();//.AngleAxis(angle, Vector3.back);
                     rotation.SetLookRotation(hit.normal);
-                    Instantiate(FX, hit.point, rotation);
+                    Game.Spawn(FX, hit.point, rotation);
                 }
             }
 

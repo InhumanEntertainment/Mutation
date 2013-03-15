@@ -25,8 +25,8 @@ public class Portal : MonoBehaviour
         if (collider.tag == "Player")
         {
             // Play Effect //
-            //Instantiate(EffectDestroy, transform.position, Quaternion.identity);
-            //Instantiate(EffectCreate, SpawnPosition, Quaternion.identity);
+            //Game.Spawn(EffectDestroy, transform.position, Quaternion.identity);
+            //Game.Spawn(EffectCreate, SpawnPosition, Quaternion.identity);
 
             // Move Object //
             collider.transform.position = SpawnPosition;

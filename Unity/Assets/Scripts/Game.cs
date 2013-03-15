@@ -6,8 +6,8 @@ public class Game : MonoBehaviour
     static public Game Instance;
 
     public int TargetFramerate = 60;
-    public GameObject Player;
-    public GameObject PlayerPrefab;
+    public PlayerController2d Player;
+    public PlayerController2d PlayerPrefab;
     public int Score;
     public Weapon[] Weapons;   
 
@@ -21,13 +21,14 @@ public class Game : MonoBehaviour
     // Frontend //
     public GameScreen[] Screens;
     public GameScreen CurrentScreen;
-    public GameScreen LastScreen; 
-    public Animation MainMenu;
+    public GameScreen LastScreen;
+    public GameObject MainMenu;
     public MenuAnimation DoorTransition;
-    public Animation GameHud;
-    public Animation PauseMenu;
+    public GameObject GameHud;
+    public GameObject PauseMenu;
     public tk2dTextMesh FPSObject;
     public tk2dTextMesh ScoreText;
+    public tk2dSlicedSprite HealthBar;
 
     // Touch Controls //
     public GameObject[] TouchButtons;
@@ -52,7 +53,17 @@ public class Game : MonoBehaviour
 	        }
 			
 			Data = MutationData.Load();
-			
+
+            // Hide touch controls on pc //
+            if (!(Application.platform == RuntimePlatform.IPhonePlayer || Application.platform == RuntimePlatform.Android))
+            {
+                for (int i = 0; i < Game.Instance.TouchButtons.Length; i++)
+                {
+                    if (TouchButtons[i] != null)
+                        TouchButtons[i].SetActive(false);
+                }
+            }
+
 			// Mute Music if Ipod is playing already //
             //if (InhumanIOS.IsMusicPlaying())
                 //Audio.MusicMute = true;		
@@ -91,7 +102,13 @@ public class Game : MonoBehaviour
             ScoreText.text = string.Format("{0:n0}", Data.Score);
             ScoreText.Commit();
         }
-        
+
+        // Update Health //
+        if (HealthBar != null && Player != null)
+        {
+            float health = Mathf.Clamp((float)Player.Health.CurrentHealth / Player.Health.MaxHealth, 0, 1);
+            HealthBar.dimensions = new Vector2( (int)(health * 96), HealthBar.dimensions.y);
+        }      
 
         // Load Level //
         if (LoadingLevel && !Application.isLoadingLevel)
@@ -111,7 +128,7 @@ public class Game : MonoBehaviour
                 Game.Instance.Data.CurrentCheckPoint = level.CheckPoints[0].name;			
             }			
 			
-            Player = Instantiate(PlayerPrefab, checkpoint, Quaternion.identity) as GameObject;
+            Player = Game.Spawn(PlayerPrefab, checkpoint, Quaternion.identity) as PlayerController2d;
             Camera.main.transform.position = Player.transform.position;
 
             LoadingLevel = false;
@@ -133,10 +150,14 @@ public class Game : MonoBehaviour
             Destroy(level.gameObject);
         }
 
-        // Destroy Player //
-        PlayerController2d player = GameObject.FindObjectOfType(typeof(PlayerController2d)) as PlayerController2d;
-        if (player != null)
-            Destroy(player.gameObject);
+        GameObject objectsGroup = GameObject.Find("Objects");
+        if (objectsGroup != null)
+        {
+            for (int i = 0; i < objectsGroup.transform.childCount; i++)
+			{
+                Destroy(objectsGroup.transform.GetChild(i).gameObject);               
+			}           
+        }
     }
 
     //============================================================================================================================================================================================//
@@ -245,15 +266,15 @@ public class Game : MonoBehaviour
     {
         print("Frontend: Play");
 
-        string level = "Level01";
+        string level = "LevelSelect";
 
-        if (Data.CurrentLevel != "")
+        /*if (Data.CurrentLevel != "")
         {
             LoadSavedLevel = true;
             level = Data.CurrentLevel;
         }
         else
-            LoadSavedLevel = false;
+            LoadSavedLevel = false;*/
 
         LoadLevel(level);
     }
@@ -261,12 +282,40 @@ public class Game : MonoBehaviour
     //============================================================================================================================================================================================//
     public void LoadLevel(string level)
     {
+        if (level == "Menu")
+        {
+            Quit();
+            return;
+        }
+
         CurrentLevel = level;
         Time.timeScale = 1;
         if(null != DoorTransition)
         {
             DoorTransition.Play("Doors_Close_Levels");
         }
+    }
+
+    //============================================================================================================================================================================================//
+    // Spawn objects into group so they can be easily cleanup up //
+    //============================================================================================================================================================================================//
+    static public Object Spawn(Object original, Vector3 position, Quaternion rotation)
+    {
+        Object obj = Instantiate(original, position, rotation);
+        GameObject objectsGroup = GameObject.Find("Objects");
+        if (objectsGroup != null)
+        {
+            Transform xform = null;
+            if (obj is GameObject)
+                xform = ((GameObject)obj).transform;
+            else if (obj is Component)
+                xform = ((Component)obj).transform;
+
+            if (xform != null)
+                xform.parent = objectsGroup.transform;
+        }
+
+        return obj;
     }
 }
 

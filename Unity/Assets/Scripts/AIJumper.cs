@@ -26,6 +26,8 @@ public class AIJumper : CharacterController2D
 
     private float CurrentJumpCoolDown = 0.0f;
 
+    public int AttackDamage = 5;
+
     //============================================================================================================================================================================================//
     protected override void Awake ()
     {
@@ -104,6 +106,59 @@ public class AIJumper : CharacterController2D
     }
 
     //============================================================================================================================================================================================//
+    void OnTriggerEnter(Collider collider)
+    {
+        OnTriggerCommon(collider);
+    }
+
+    //============================================================================================================================================================================================//
+    void OnTriggerStay(Collider collider)
+    {
+        OnTriggerCommon(collider);
+    }
+
+    //============================================================================================================================================================================================//
+    void OnTriggerCommon(Collider collider)
+    {
+        if(Controller.enabled)
+        {
+            if(collider.tag == "Player")
+            {
+                Vector3 toCol = collider.transform.position - transform.position;
+
+                Debug.DrawLine(toCol, transform.position, Color.red, 100.0f);
+
+                toCol.Normalize();
+
+                //print(Vector3.Dot(toCol, Vector3.up));
+
+                // Only apply damage if the collider is not above us.
+                if(Vector3.Dot(toCol, Vector3.up) < 0.2f)
+                {
+                    Health h = collider.GetComponent<Health>();
+    
+                    if(null != h)
+                    {
+                        h.ApplyDamage(AttackDamage);
+                    }
+                }
+
+                GetComponent<Health>().Kill();
+
+                Controller.enabled = false;
+            }
+        }
+    }
+
+    //============================================================================================================================================================================================//
+    void OnDeathCompleteDelegate(tk2dAnimatedSprite sprite, int clipId)
+    {
+        sprite.animationCompleteDelegate = null;
+
+        Destroy(gameObject);
+    }
+
+    //============================================================================================================================================================================================//
     protected override void ChooseAnimation()
     {
         if(GetComponent<Health>().IsDead())
@@ -112,6 +167,12 @@ public class AIJumper : CharacterController2D
 
             // Prevent any collisions from occuring after he is dead.
             Controller.enabled = false;
+
+            tk2dAnimatedSprite sprite = GetComponent<tk2dAnimatedSprite>();
+            if(sprite)
+            {
+                sprite.animationCompleteDelegate = OnDeathCompleteDelegate;
+            }
 
             return;
         }

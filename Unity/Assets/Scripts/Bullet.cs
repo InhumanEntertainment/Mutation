@@ -54,7 +54,7 @@ public class Bullet : MonoBehaviour
 
             Physics.Raycast(ray, out hit, distance + 2, layerMask);
 
-            if (hit.collider != null)
+            if (hit.collider != null && !hit.collider.isTrigger)
             {
                 Destroy(gameObject);
 

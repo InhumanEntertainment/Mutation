@@ -263,7 +263,10 @@ public class Game : MonoBehaviour
     {
         CurrentLevel = level;
         Time.timeScale = 1;
-        DoorTransition.Play("Doors_Close_Levels");
+        if(null != DoorTransition)
+        {
+            DoorTransition.Play("Doors_Close_Levels");
+        }
     }
 }
 

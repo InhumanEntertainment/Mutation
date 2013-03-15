@@ -22,6 +22,10 @@ public class AIJumper : CharacterController2D
 
     public float PounceSpeed = 15.0f;
 
+    public float JumpCoolDown = 1.0f;
+
+    private float CurrentJumpCoolDown = 0.0f;
+
     //============================================================================================================================================================================================//
     protected override void Awake ()
     {
@@ -46,17 +50,27 @@ public class AIJumper : CharacterController2D
 
         if(Controller.isGrounded)
         {
+            JumpCount = 0;
+            
             // Move in the direction we are facing, forever...
             WantedVelocity = new Vector3 ((int)Dir * Speed, 0, 0);
 
-            if(Vector3.Distance(Game.Instance.Player.transform.position, transform.position) < MaxDistance)
+            CurrentJumpCoolDown += Time.deltaTime;
+
+            if(CurrentJumpCoolDown > JumpCoolDown && Vector3.Distance(Game.Instance.Player.transform.position, transform.position) < MaxDistance)
             {
                 JumpPressed = true;
+
+                CurrentJumpCoolDown = 0.0f;
+
+                Vector3 dirToPlayer = Game.Instance.Player.transform.position - transform.position;
+
+                WantedVelocity.x = dirToPlayer.normalized.x * PounceSpeed;
             }
         }
         else
         {
-
+            /*
             if(Vector3.Distance(Game.Instance.Player.transform.position, transform.position) < MaxDistance)
             {
                 Vector3 dirToPlayer = Game.Instance.Player.transform.position - transform.position;
@@ -67,6 +81,18 @@ public class AIJumper : CharacterController2D
             {
                 WantedVelocity.x = 0;
             }
+            */
+        }
+
+        // If the character is actively moving in a direction, that should become the new
+        // direction.
+        if(WantedVelocity.x > 0)
+        {
+            Dir = Direction.Right;
+        }
+        else if(WantedVelocity.x < 0)
+        {
+            Dir = Direction.Left;
         }
 
     }

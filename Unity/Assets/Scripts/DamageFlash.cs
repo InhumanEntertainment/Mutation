@@ -5,10 +5,10 @@ using System.Collections;
 public class DamageFlash : MonoBehaviour
 {
 
-    public Color Col;
+    public Color Col = Color.red;
 
     // How long to hold on each color.
-    public float HoldDuration = 0.25f;
+    public float HoldDuration = 0.1f;
 
     private float CurrentTime = 0.0f;
 
@@ -33,6 +33,16 @@ public class DamageFlash : MonoBehaviour
         {
             CurrentPlayTime += Time.deltaTime;
     	    CurrentTime += Time.deltaTime;
+
+            // Once the object dies it should stop flashing (i think...).
+            Health health = GetComponent<Health>();
+            if(null != health)
+            {
+                if(health.IsDead())
+                {
+                    StopFlashing();
+                }
+            }
     
             if(CurrentTime >= HoldDuration)
             {
@@ -61,5 +71,10 @@ public class DamageFlash : MonoBehaviour
     {
         PlayTime = length;
         CurrentPlayTime = 0;
+    }
+
+    public void StopFlashing()
+    {
+        CurrentPlayTime = PlayTime;
     }
 }

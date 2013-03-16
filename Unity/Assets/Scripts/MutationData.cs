@@ -99,9 +99,10 @@ public class MutationData
 	        {
 	            return serializer.Deserialize(stream) as MutationData;
 	        }
-			
-			Debug.LogError("Couldn't Load Data");			
-            return new MutationData();
+
+            // Unreachable code.
+			//Debug.LogError("Couldn't Load Data");
+            //return new MutationData();
         }
         else
         {

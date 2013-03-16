@@ -59,7 +59,7 @@ public class TiledTilemaps : MonoBehaviour
 	private float scale;
 	private float scaleX;
 	private float scaleY;
-	private float anchorX; 
+	//private float anchorX;
 	private float anchorY;
 	
 	private struct TilelayerData {
@@ -154,7 +154,7 @@ public class TiledTilemaps : MonoBehaviour
 				scaleX = tileWidth * scale;
 				scaleY = tileHeight * scale;
 				
-				anchorX = 0; 
+				//anchorX = 0;
 				anchorY = tileHeight;
 				
 				XmlNodeList tilesetsNodes = _xml.DocumentElement.SelectNodes("tileset");

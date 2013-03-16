@@ -16,7 +16,7 @@ public class MenuAnimation : MonoBehaviour
     AnimationState currentState;
 
     public bool IsPlaying;
-    float StartTime = 0F;
+    //float StartTime = 0F;
     public float AnimTime = 0F;
 
     public GameObject MessageObject;

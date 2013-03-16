@@ -242,6 +242,7 @@ public class Game : MonoBehaviour
         print("Frontend: Quit");
 
         CleanupScene();
+        Time.timeScale = 1;
         SetScreen("Main");
     }
 

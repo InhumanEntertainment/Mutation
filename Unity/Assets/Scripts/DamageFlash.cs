@@ -59,11 +59,15 @@ public class DamageFlash : MonoBehaviour
                     Sprite.color = Color.white;
                 }
             }
-        }
-        else
-        {
-            ColorApplied = false;
-            Sprite.color = Color.white;
+
+            // After update the times, are we now over the limit? That means that this
+            // chunk of code won't be executed anymore, so put the color back to what it should
+            // be.
+            if(CurrentPlayTime >= PlayTime)
+            {
+                ColorApplied = false;
+                Sprite.color = Color.white;
+            }
         }
 	}
 

@@ -19,14 +19,17 @@ public class Health : MonoBehaviour {
 
     public void ApplyDamage(int amount)
     {
-        // Subtract the amount from health but clamp to 0.
-        CurrentHealth = System.Math.Max(CurrentHealth - amount, 0);
-
-        DamageFlash df = GetComponent<DamageFlash>();
-
-        if(df != null)
+        if(!IsDead())
         {
-            df.StartFlashing(DamageFlashTime);
+            // Subtract the amount from health but clamp to 0.
+            CurrentHealth = System.Math.Max(CurrentHealth - amount, 0);
+    
+            DamageFlash df = GetComponent<DamageFlash>();
+    
+            if(df != null)
+            {
+                df.StartFlashing(DamageFlashTime);
+            }
         }
     }
 

@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
+[RequireComponent (typeof(Health))]
 public class Spawner : MonoBehaviour 
 {
     public float MinSpawnTime = 0.1f;
@@ -11,7 +12,7 @@ public class Spawner : MonoBehaviour
     public Vector3 MinSpawnSpeed;
     public Vector3 MaxSpawnSpeed;
 
-    public enum SpawnerState { Idle, Open };
+    public enum SpawnerState { Idle, Open, Dead };
     public SpawnerState State = SpawnerState.Idle;
 
     public GameObject JumperPrefab;
@@ -22,16 +23,39 @@ public class Spawner : MonoBehaviour
     float DelayTime;
     tk2dAnimatedSprite Sprite;
 
+    private Health HealthComponent;
+
+    public Color ColorOnDeath = new Color(0.26f, 0.63f, 0.32f);
+    public float DeathColorChangeTime = 3.0f;
+
     //============================================================================================================================================================================================//
     void Awake()
     {
         NextSpawnTime = Mathf.Lerp(MinSpawnTime, MaxSpawnTime, Random.value);
         Sprite = GetComponent<tk2dAnimatedSprite>();
+        System.Diagnostics.Debug.Assert(Sprite != null);
+        HealthComponent = GetComponent<Health>();
+        System.Diagnostics.Debug.Assert(HealthComponent != null);
 	}
 
     //============================================================================================================================================================================================//
     void Update()
     {
+        if(State != SpawnerState.Dead && HealthComponent.IsDead())
+        {
+            State = SpawnerState.Dead;
+            Sprite.Play("Spawner_Open");
+
+            // Incase we were in the middle of closing.
+            Sprite.animationCompleteDelegate = null;
+
+            SpriteColorChange scc = GetComponent<SpriteColorChange>();
+            if(null != scc)
+            {
+                scc.StartColorChange(ColorOnDeath, DeathColorChangeTime);
+            }
+        }
+
         if (State == SpawnerState.Idle && Time.timeSinceLevelLoad - LastSpawnTime > NextSpawnTime)
         {
             NextSpawnTime = Mathf.Lerp(MinSpawnTime, MaxSpawnTime, Random.value);

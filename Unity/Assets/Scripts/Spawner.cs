@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 [RequireComponent (typeof(Health))]
 public class Spawner : MonoBehaviour 
@@ -28,6 +29,9 @@ public class Spawner : MonoBehaviour
     public Color ColorOnDeath = new Color(0.26f, 0.63f, 0.32f);
     public float DeathColorChangeTime = 3.0f;
 
+    public int MaxSpawn = 2;
+    private List<GameObject> SpawnedJumpers;
+
     //============================================================================================================================================================================================//
     void Awake()
     {
@@ -36,11 +40,23 @@ public class Spawner : MonoBehaviour
         System.Diagnostics.Debug.Assert(Sprite != null);
         HealthComponent = GetComponent<Health>();
         System.Diagnostics.Debug.Assert(HealthComponent != null);
+        SpawnedJumpers = new List<GameObject>(MaxSpawn);
 	}
 
     //============================================================================================================================================================================================//
     void Update()
     {
+        // Clean up any jumpers that have been destoryed.
+        for(int i = SpawnedJumpers.Count - 1; i >= 0; i--)
+        {
+            GameObject go = SpawnedJumpers[i];
+
+            if(go == null)
+            {
+                SpawnedJumpers.RemoveAt(i);
+            }
+        }
+
         if(State != SpawnerState.Dead && HealthComponent.IsDead())
         {
             State = SpawnerState.Dead;
@@ -74,13 +90,18 @@ public class Spawner : MonoBehaviour
     //============================================================================================================================================================================================//
     void Spawn()
     {
-        GameObject jumper = Game.Spawn(JumperPrefab, transform.position + SpawnOffset, Quaternion.identity) as GameObject;
-        Vector3 velocity = new Vector3(Mathf.Lerp(MinSpawnSpeed.x, MaxSpawnSpeed.x, Random.value), Mathf.Lerp(MinSpawnSpeed.y, MaxSpawnSpeed.y, Random.value), 0);  
-        jumper.GetComponent<AIJumper>().WantedVelocity = velocity;
+        if(SpawnedJumpers.Count < MaxSpawn)
+        {
+            GameObject jumper = Game.Spawn(JumperPrefab, transform.position + SpawnOffset, Quaternion.identity) as GameObject;
+            Vector3 velocity = new Vector3(Mathf.Lerp(MinSpawnSpeed.x, MaxSpawnSpeed.x, Random.value), Mathf.Lerp(MinSpawnSpeed.y, MaxSpawnSpeed.y, Random.value), 0);  
+            jumper.GetComponent<AIJumper>().WantedVelocity = velocity;
+    
+            Sprite.Play("Spawner_Open");
+            State = SpawnerState.Open;
+            LastSpawnTime = Time.timeSinceLevelLoad;
 
-        Sprite.Play("Spawner_Open");
-        State = SpawnerState.Open;
-        LastSpawnTime = Time.timeSinceLevelLoad;
+            SpawnedJumpers.Add(jumper);
+        }
     }
 
     //============================================================================================================================================================================================//

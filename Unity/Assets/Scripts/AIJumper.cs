@@ -126,8 +126,6 @@ public class AIJumper : CharacterController2D
             {
                 Vector3 toCol = collider.transform.position - transform.position;
 
-                Debug.DrawLine(toCol, transform.position, Color.red, 100.0f);
-
                 toCol.Normalize();
 
                 //print(Vector3.Dot(toCol, Vector3.up));
@@ -225,5 +223,12 @@ public class AIJumper : CharacterController2D
         {
             return false;
         }
+    }
+
+    //============================================================================================================================================================================================//
+    void OnDrawGizmosSelected ()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, MaxDistance);
     }
 }

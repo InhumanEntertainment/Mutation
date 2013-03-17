@@ -155,6 +155,8 @@ public abstract class CharacterController2D : MonoBehaviour
 
         JumpCount++;
         JumpPressed = false;
+
+        Audio.PlaySound("Player Jump");
     }
 
     //============================================================================================================================================================================================//
@@ -187,6 +189,7 @@ public abstract class CharacterController2D : MonoBehaviour
                 // Just do a normal jump but with an overwriten jump velocity.
                 JumpPressed = true;
                 LaunchVelocity = hit.gameObject.transform.up * hit.gameObject.GetComponent<JumpPad>().Strength;
+                Audio.PlaySound("JumpPad");
             }
 
             return;

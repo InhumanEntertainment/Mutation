@@ -30,6 +30,8 @@ public class Health : MonoBehaviour {
             {
                 df.StartFlashing(DamageFlashTime);
             }
+
+            Audio.PlaySound("Player Damage");
         }
     }
 

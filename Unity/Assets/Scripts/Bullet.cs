@@ -8,6 +8,10 @@ public class Bullet : MonoBehaviour
     public int Damage;
     public LayerMask Mask;
 
+    public bool DestroyOffScreen = true;
+
+    public bool DestroyOnCollision = true;
+
     //============================================================================================================================================================================================//
     /*void OnCollisionEnter(Collision collision)
     {
@@ -48,6 +52,23 @@ public class Bullet : MonoBehaviour
         }
     }
 
+
+    void OnCollisionEnter(Collision collision)
+    {
+        OnCollisionCommon(collision);
+    }
+
+    void OnCollisionStay(Collision collision)
+    {
+        OnCollisionCommon(collision);
+    }
+
+    void OnCollisionCommon(Collision collision)
+    {
+        OnCollision(collision.collider, collision.contacts[0].point, collision.contacts[0].normal);
+    }
+
+
     //============================================================================================================================================================================================//
     void Awake()
     {
@@ -57,7 +78,10 @@ public class Bullet : MonoBehaviour
     //============================================================================================================================================================================================//
     void OnBecameInvisible()
     {
-        Destroy(gameObject);
+        if(DestroyOffScreen)
+        {
+            Destroy(gameObject);
+        }
     }
 
     //============================================================================================================================================================================================//
@@ -86,7 +110,10 @@ public class Bullet : MonoBehaviour
     //============================================================================================================================================================================================//
     private void OnCollision(Collider collider, Vector3 point, Vector3 normal)
     {
-        Destroy(gameObject);
+        if(DestroyOnCollision)
+        {
+            Destroy(gameObject);
+        }
         
         if (collider.rigidbody != null)
         {

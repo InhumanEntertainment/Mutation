@@ -73,7 +73,14 @@ public class PlayerController2d : CharacterController2D
     //============================================================================================================================================================================================//
     protected override void ChooseAnimation()
     {
-        if(Controller.isGrounded)
+        Health health = GetComponent<Health>();
+
+        if(health != null && health.IsDead())
+        {
+            PlayAnimation("Kevin_Death");
+            Sprite.animationCompleteDelegate = OnDeathCompleteDelegate;
+        }
+        else if(Controller.isGrounded)
         {
             if (Mathf.Abs(CurrentVelocity.x) >= Mathf.Epsilon)
             {
@@ -145,5 +152,13 @@ public class PlayerController2d : CharacterController2D
         }
      
         return cont;
+    }
+
+    //============================================================================================================================================================================================//
+    private void OnDeathCompleteDelegate(tk2dAnimatedSprite sprite, int clipId)
+    {
+        sprite.animationCompleteDelegate = null;
+
+        Game.Instance.GameOver();
     }
 }

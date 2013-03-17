@@ -62,12 +62,22 @@ public abstract class CharacterController2D : MonoBehaviour
     /// </summary>
     protected CharacterController Controller;
     public Health Health;
+
+    /// <summary>
+    /// Direct acccess to the tk2d Sprite component.
+    /// </summary>
+    protected tk2dAnimatedSprite Sprite;
  
     //============================================================================================================================================================================================//
     protected virtual void Awake ()
     {
         Controller = GetComponent<CharacterController>();
         Health = GetComponent<Health>();
+        Sprite = GetComponent<tk2dAnimatedSprite>();
+
+        System.Diagnostics.Debug.Assert(Controller != null);
+        System.Diagnostics.Debug.Assert(Health != null);
+        System.Diagnostics.Debug.Assert(Sprite != null);
     }
 
     //============================================================================================================================================================================================//
@@ -153,10 +163,9 @@ public abstract class CharacterController2D : MonoBehaviour
     //============================================================================================================================================================================================//
     protected void PlayAnimation (string name)
     {
-        tk2dAnimatedSprite sprite = GetComponent<tk2dAnimatedSprite>();
-        if (sprite && sprite.CurrentClip != null && name != sprite.CurrentClip.name)
+        if (Sprite.CurrentClip != null && name != Sprite.CurrentClip.name)
         {
-            sprite.Play(name);
+            Sprite.Play(name);
         }
     }
  

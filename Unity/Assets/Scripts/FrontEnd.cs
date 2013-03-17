@@ -28,6 +28,7 @@ public class FrontEnd : MonoBehaviour
 
         Game.Instance.LastScreen = Game.Instance.CurrentScreen;
         Game.Instance.CurrentScreen = Game.Instance.GetScreen("Game");
+        Game.Instance.LastScreen.AnimObject.SetActive(false);
         Game.Instance.MainMenu.gameObject.SetActive(false);
         Game.Instance.GameHud.gameObject.SetActive(true);
         

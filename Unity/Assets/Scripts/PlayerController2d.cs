@@ -73,9 +73,7 @@ public class PlayerController2d : CharacterController2D
     //============================================================================================================================================================================================//
     protected override void ChooseAnimation()
     {
-        Health health = GetComponent<Health>();
-
-        if(health != null && health.IsDead())
+        if(Health.IsDead())
         {
             PlayAnimation("Kevin_Death");
             Sprite.animationCompleteDelegate = OnDeathCompleteDelegate;

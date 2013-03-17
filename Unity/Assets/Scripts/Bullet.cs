@@ -6,6 +6,7 @@ public class Bullet : MonoBehaviour
     public ParticleSystem FX;
     Vector3 LastPosition;
     public int Damage;
+    public LayerMask Mask;
 
     //============================================================================================================================================================================================//
     /*void OnCollisionEnter(Collision collision)
@@ -25,6 +26,27 @@ public class Bullet : MonoBehaviour
             
         }
     }*/
+
+    //============================================================================================================================================================================================//
+    void OnTriggerEnter(Collider collider)
+    {
+        OnTriggerCommon(collider);
+    }
+
+    //============================================================================================================================================================================================//
+    void OnTriggerStay(Collider collider)
+    {
+        OnTriggerCommon(collider);
+    }
+
+    //============================================================================================================================================================================================//
+    void OnTriggerCommon(Collider collider)
+    {
+        if((( 1 << collider.gameObject.layer) & (int)Mask.value) != 0)
+        {
+            OnCollision(collider, transform.position, collider.transform.position - transform.position);
+        }
+    }
 
     //============================================================================================================================================================================================//
     void Awake()
@@ -50,42 +72,45 @@ public class Bullet : MonoBehaviour
             Ray ray = new Ray(LastPosition - offset, direction);
             RaycastHit hit = new RaycastHit();
 
-            int layerMask = (1 << 11) | (1 << 0);
-
-            Physics.Raycast(ray, out hit, distance + 2, layerMask);
+            Physics.Raycast(ray, out hit, distance + 2, Mask.value);
 
             if (hit.collider != null)
             {
-                Destroy(gameObject);
-
-                if (hit.collider.rigidbody != null)
-                {
-                    hit.collider.rigidbody.AddForceAtPosition(rigidbody.velocity * 100, hit.point);
-                }
-
-
-                Health h = hit.collider.GetComponent<Health>();
-                if(h != null)
-                {
-                    h.ApplyDamage(Damage);
-					Game.Instance.Data.Score += 100;
-                }
-                else
-                {
-                    Audio.PlaySound("Ricochet");
-                }
-
-                if (FX != null)
-                {
-                    //float angle = Mathf.Atan2(hit.normal.y, hit.normal.x) * Mathf.Rad2Deg;
-                    //print(angle);
-                    Quaternion rotation = new Quaternion();//.AngleAxis(angle, Vector3.back);
-                    rotation.SetLookRotation(hit.normal);
-                    Game.Spawn(FX, hit.point, rotation);
-                }
+                OnCollision(hit.collider, hit.point, hit.normal);
             }
 
             LastPosition = transform.position;
         }        
 	}
+
+    //============================================================================================================================================================================================//
+    private void OnCollision(Collider collider, Vector3 point, Vector3 normal)
+    {
+        Destroy(gameObject);
+        
+        if (collider.rigidbody != null)
+        {
+            collider.rigidbody.AddForceAtPosition(rigidbody.velocity * 100, point);
+        }
+
+        Health h = collider.GetComponent<Health>();
+        if(h != null)
+        {
+            h.ApplyDamage(Damage);
+            Game.Instance.Data.Score += 100;
+        }
+		else
+        {
+        	Audio.PlaySound("Ricochet");
+		}
+        
+        if (FX != null)
+        {
+            //float angle = Mathf.Atan2(hit.normal.y, hit.normal.x) * Mathf.Rad2Deg;
+            //print(angle);
+            Quaternion rotation = new Quaternion();//.AngleAxis(angle, Vector3.back);
+            rotation.SetLookRotation(normal);
+            Game.Spawn(FX, point, rotation);
+        }
+    }
 }

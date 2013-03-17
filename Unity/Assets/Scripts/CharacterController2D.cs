@@ -4,6 +4,7 @@ using System.Collections;
 
 [RequireComponent (typeof(CharacterController))]
 [RequireComponent (typeof(tk2dAnimatedSprite))]
+[RequireComponent (typeof(Health))]
 public abstract class CharacterController2D : MonoBehaviour
 {
     /// <summary>
@@ -61,7 +62,11 @@ public abstract class CharacterController2D : MonoBehaviour
     /// The character controller attached to this object.
     /// </summary>
     protected CharacterController Controller;
-    public Health Health;
+
+    /// <summary>
+    /// The health controller attached to this object.
+    /// </summary>
+    protected Health Health;
 
     /// <summary>
     /// Direct acccess to the tk2d Sprite component.
@@ -225,5 +230,14 @@ public abstract class CharacterController2D : MonoBehaviour
     {
         System.Diagnostics.Debug.Assert(transform.localScale.x == -1.0f || transform.localScale.x == 1.0f, "Direction should be either 1 or -1.");
         return transform.localScale.x;
+    }
+
+    //============================================================================================================================================================================================//
+    public Health HealthController
+    {
+        get
+        {
+            return Health;
+        }
     }
 }

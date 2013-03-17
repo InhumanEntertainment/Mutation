@@ -1,22 +1,19 @@
 using UnityEngine;
 using System.Collections;
 
-public class Health : MonoBehaviour {
-
+public class Health : MonoBehaviour 
+{
     public int MaxHealth = 100;
     public int CurrentHealth = 100;
     public float DamageFlashTime = 1.0f;
 
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+    //============================================================================================================================================================================================//
+    public void AddHealth(int amount)
+    {
+        CurrentHealth = Mathf.Min(CurrentHealth + amount, MaxHealth);
+    }
 
+    //============================================================================================================================================================================================//
     public void ApplyDamage(int amount)
     {
         if(!IsDead())
@@ -35,11 +32,13 @@ public class Health : MonoBehaviour {
         }
     }
 
+    //============================================================================================================================================================================================//
     public bool IsDead()
     {
         return CurrentHealth <= 0;
     }
 
+    //============================================================================================================================================================================================//
     public void Kill()
     {
         CurrentHealth = 0;

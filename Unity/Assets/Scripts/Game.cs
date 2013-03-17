@@ -235,6 +235,7 @@ public class Game : MonoBehaviour
         SetScreen("GameOver");
         Time.timeScale = 0f;
         Audio.Music.Stop();
+        Audio.PlaySound("Game Over");
     }
 
     //============================================================================================================================================================================================//
@@ -246,16 +247,16 @@ public class Game : MonoBehaviour
         PauseMenu.gameObject.SetActive(false);
         */
 
-        Time.timeScale = 1;
         SetScreen("Game");
+        Time.timeScale = 1;
         Audio.Music.Play();
     }
 
     //============================================================================================================================================================================================//
     public void Restart()
     {
-        Time.timeScale = 1;
         LoadLevel(CurrentLevel);
+        Time.timeScale = 1;
         Audio.Music.Play();
     }
 
@@ -265,8 +266,8 @@ public class Game : MonoBehaviour
         print("Frontend: Quit");
 
         CleanupScene();
-        Time.timeScale = 1;
         SetScreen("Main");
+        Time.timeScale = 1;
         if (CurrentLevel != "LevelSelect")
         {
             Audio.PlayMusic("Menu", true);

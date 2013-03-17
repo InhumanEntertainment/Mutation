@@ -24,6 +24,7 @@ public class CheckPoint : MonoBehaviour
             {
                 // Next Level //
                 Game.Instance.LoadLevel(Level);
+                Audio.PlaySound("Teleport");
             }
             else
             {

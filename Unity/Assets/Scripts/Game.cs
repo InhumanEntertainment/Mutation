@@ -131,6 +131,11 @@ public class Game : MonoBehaviour
             Player = Game.Spawn(PlayerPrefab, checkpoint, Quaternion.identity) as PlayerController2d;
             Camera.main.transform.position = Player.transform.position;
 
+            if (level.MusicTrack != "")
+            {
+                Audio.PlayMusic(level.MusicTrack, true);
+            }
+          
             LoadingLevel = false;
             LoadSavedLevel = false;
             if(DoorTransition != null)
@@ -221,6 +226,7 @@ public class Game : MonoBehaviour
        
         SetScreen("Pause");
         Time.timeScale = 0f;
+        Audio.Music.Pause();
     }
 
     //============================================================================================================================================================================================//
@@ -228,6 +234,7 @@ public class Game : MonoBehaviour
     {
         SetScreen("GameOver");
         Time.timeScale = 0f;
+        Audio.Music.Stop();
     }
 
     //============================================================================================================================================================================================//
@@ -241,6 +248,7 @@ public class Game : MonoBehaviour
 
         Time.timeScale = 1;
         SetScreen("Game");
+        Audio.Music.Play();
     }
 
     //============================================================================================================================================================================================//
@@ -248,6 +256,7 @@ public class Game : MonoBehaviour
     {
         Time.timeScale = 1;
         LoadLevel(CurrentLevel);
+        Audio.Music.Play();
     }
 
     //============================================================================================================================================================================================//
@@ -258,6 +267,10 @@ public class Game : MonoBehaviour
         CleanupScene();
         Time.timeScale = 1;
         SetScreen("Main");
+        if (CurrentLevel != "LevelSelect")
+        {
+            Audio.PlayMusic("Menu", true);
+        }        
     }
 
     //============================================================================================================================================================================================//
@@ -280,17 +293,7 @@ public class Game : MonoBehaviour
     public void Play()
     {
         print("Frontend: Play");
-
         string level = "LevelSelect";
-
-        /*if (Data.CurrentLevel != "")
-        {
-            LoadSavedLevel = true;
-            level = Data.CurrentLevel;
-        }
-        else
-            LoadSavedLevel = false;*/
-
         LoadLevel(level);
     }
 

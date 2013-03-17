@@ -205,6 +205,8 @@ public class Weapon : MonoBehaviour
         casing.rigidbody.angularVelocity = new Vector3(0, 0, Random.value * 100 - 50);
         casing.rigidbody.AddForce(10 * Random.value - 5, 5 * Random.value + 10, 0);
 
+        // Play Sound //
+        Audio.PlaySound("Player Shoot");
 	}
 	
 	/// <summary>

@@ -99,6 +99,10 @@ public class Bullet : MonoBehaviour
             h.ApplyDamage(Damage);
             Game.Instance.Data.Score += 100;
         }
+		else
+        {
+        	Audio.PlaySound("Ricochet");
+		}
         
         if (FX != null)
         {

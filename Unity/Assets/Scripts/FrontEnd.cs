@@ -18,7 +18,9 @@ public class FrontEnd : MonoBehaviour
         Game.Instance.LastScreen.AnimObject.SetActive(false);
         Game.Instance.CurrentScreen.AnimObject.SetActive(true);
 
-        Game.Instance.DoorTransition.Play("Doors_Open");          
+        Game.Instance.DoorTransition.Play("Doors_Open");
+
+        Audio.PlaySound("Menu Doors Close");
     }
 
     //============================================================================================================================================================================================//
@@ -38,5 +40,7 @@ public class FrontEnd : MonoBehaviour
         // Load Level //
         Game.Instance.Async = Application.LoadLevelAdditiveAsync(Game.Instance.CurrentLevel);
         Game.Instance.LoadingLevel = true;
+
+        Audio.PlaySound("Menu Doors Close");
     }
 }

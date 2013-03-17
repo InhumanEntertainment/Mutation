@@ -25,10 +25,7 @@ public class JumpPad : MonoBehaviour
         //collision.collider.rigidbody.velocity = -collision.contacts[0].normal * Strength;
         collision.collider.rigidbody.velocity = Vector3.up * Strength;
 
-        if (animation != null)
-        {
-            //animation.Play();
-        }
+        Audio.PlaySound("JumpPad");
     }
 
     //======================================================================================================================================//

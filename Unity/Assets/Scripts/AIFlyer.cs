@@ -65,8 +65,18 @@ public class AIFlyer : CharacterController2D
             case ActionState.Swoop:
             {
                 Vector3 toTarget = Game.Instance.Player.transform.position - transform.position;
+                float distance2 = toTarget.sqrMagnitude;
 
-                WantedVelocity = toTarget.normalized * Speed;
+                if (distance2 > DisengageRange * DisengageRange)
+                {
+                    WantedVelocity = Vector3.zero;
+
+                    State = ActionState.Idle;
+                }
+                else
+                {
+                    WantedVelocity = toTarget.normalized * Speed;
+                }
 
                 break;
             }
@@ -160,5 +170,9 @@ public class AIFlyer : CharacterController2D
     {
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, AttackRange);
+
+
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(transform.position, DisengageRange);
     }
 }

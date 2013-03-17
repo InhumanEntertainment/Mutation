@@ -2,7 +2,6 @@ using UnityEngine;
 
 using System.Collections;
 
-[RequireComponent (typeof(Health))]
 public class AIWalker : CharacterController2D
 {
     /// <summary>
@@ -19,6 +18,31 @@ public class AIWalker : CharacterController2D
     /// </summary>
     private Direction Dir = Direction.Left;
 
+    /// <summary>
+    /// The max distance a target can be for him to be fired upon.
+    /// </summary>
+    public float FiringRange = 15.0f;
+
+    /// <summary>
+    /// The speed at which the bullet will be fired.
+    /// </summary>
+    public float BulletSpeed = 10.0f;
+
+    /// <summary>
+    /// Time between each firing of a bullet.
+    /// </summary>
+    public float FiringInterval = 2.0f;
+
+    /// <summary>
+    /// The type of bullet to fire.
+    /// </summary>
+    public Bullet BulletTemplate;
+
+    /// <summary>
+    /// Tracks the amount of time that has passed since the last time a bullet was fired.
+    /// </summary>
+    private float TimeSinceFired = 0.0f;
+
     //============================================================================================================================================================================================//
     protected override void Awake ()
     {
@@ -30,20 +54,46 @@ public class AIWalker : CharacterController2D
     {
         base.Update();
 
-        // If there is no ground in front of us, turn around.
-        if (IsApporachingEdge ())
+        // Dead men don't walk.
+        if(!Health.IsDead())
         {
-            Dir = (Direction)((int)Dir * -1);
-        }
+            // If there is no ground in front of us, turn around.
+            if (IsApporachingEdge ())
+            {
+                Dir = (Direction)((int)Dir * -1);
+            }
+    
+            if(Controller.isGrounded && !GetComponent<Health>().IsDead())
+            {
+                // Move in the direction we are facing, forever...
+                WantedVelocity = new Vector3 ((int)Dir * Speed, 0, 0);
+            }
+            else
+            {
+                WantedVelocity = Vector3.zero;
+            }
 
-        if(Controller.isGrounded && !GetComponent<Health>().IsDead())
-        {
-            // Move in the direction we are facing, forever...
-            WantedVelocity = new Vector3 ((int)Dir * Speed, 0, 0);
-        }
-        else
-        {
-            WantedVelocity = Vector3.zero;
+            // Has enough time passed that we should fire again.
+            TimeSinceFired += Time.deltaTime;
+            if(TimeSinceFired > FiringInterval)
+            {
+                // Check if the target is within range.
+                Vector3 vecToTarget = Game.Instance.Player.transform.position - transform.position;
+
+                // Distance squared.
+                float distance2 = vecToTarget.sqrMagnitude;
+
+                if(distance2 <  FiringRange * FiringRange)
+                {
+                    // Reset the time so that we don't fire again next frame.
+                    TimeSinceFired = 0.0f;
+
+                    // Create a bullet and fire it toward the targer.
+                    Bullet projectile = Game.Spawn(BulletTemplate, transform.position, Quaternion.identity) as Bullet;
+                    Vector3 finalVel = vecToTarget.normalized * BulletSpeed;
+                    projectile.rigidbody.velocity = finalVel;
+                }
+            }
         }
     }
 
@@ -116,5 +166,12 @@ public class AIWalker : CharacterController2D
         {
             return false;
         }
+    }
+
+    //============================================================================================================================================================================================//
+    void OnDrawGizmosSelected ()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, FiringRange);
     }
 }

@@ -106,7 +106,7 @@ public class Game : MonoBehaviour
         // Update Health //
         if (HealthBar != null && Player != null)
         {
-            float health = Mathf.Clamp((float)Player.Health.CurrentHealth / Player.Health.MaxHealth, 0, 1);
+            float health = Mathf.Clamp((float)Player.HealthController.CurrentHealth / Player.HealthController.MaxHealth, 0, 1);
             HealthBar.dimensions = new Vector2( (int)(health * 96), HealthBar.dimensions.y);
         }      
 

@@ -145,7 +145,7 @@ public class AIFlyer : CharacterController2D
     {
         if (GetComponent<Health>().IsDead())
         {
-            PlayAnimation("Jumper_Death");
+            PlayAnimation("Flyer_Death");
 
             // Prevent any collisions from occuring after he is dead.
             Controller.enabled = false;
@@ -160,7 +160,7 @@ public class AIFlyer : CharacterController2D
         }
 
 
-        PlayAnimation("Jumper_Jump");
+        PlayAnimation("Flyer_Fly");
     }
 
 

@@ -72,6 +72,11 @@ public abstract class CharacterController2D : MonoBehaviour
     /// Direct acccess to the tk2d Sprite component.
     /// </summary>
     protected tk2dAnimatedSprite Sprite;
+
+    /// <summary>
+    /// Allow some controllers to not use gravity.
+    /// </summary>
+    public bool ApplyGravity = true;
  
     //============================================================================================================================================================================================//
     protected virtual void Awake ()
@@ -114,7 +119,10 @@ public abstract class CharacterController2D : MonoBehaviour
             Jump();
         }
 
-        WantedVelocity.y += Physics.gravity.y * Time.deltaTime;
+        if(ApplyGravity)
+        {
+            WantedVelocity.y += Physics.gravity.y * Time.deltaTime;
+        }
 
         // If the player is trying to move horizontally, slowly bring them to a stop.
         if (Mathf.Abs(WantedVelocity.x) < Mathf.Epsilon)

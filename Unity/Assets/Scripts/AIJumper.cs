@@ -1,7 +1,6 @@
 using UnityEngine;
 using System.Collections;
 
-[RequireComponent (typeof(Health))]
 public class AIJumper : CharacterController2D
 {
     /// <summary>

@@ -8,6 +8,8 @@ public class Game : MonoBehaviour
     public int TargetFramerate = 60;
     public PlayerController2d Player;
     public PlayerController2d PlayerPrefab;
+    public bool TouchControls = false;
+
     public int Score;
     public Weapon[] Weapons;   
 
@@ -55,7 +57,7 @@ public class Game : MonoBehaviour
 			Data = MutationData.Load();
 
             // Hide touch controls on pc //
-            if (!(Application.platform == RuntimePlatform.IPhonePlayer || Application.platform == RuntimePlatform.Android))
+            if (!(TouchControls || Application.platform == RuntimePlatform.IPhonePlayer || Application.platform == RuntimePlatform.Android))
             {
                 for (int i = 0; i < Game.Instance.TouchButtons.Length; i++)
                 {

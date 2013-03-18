@@ -70,6 +70,11 @@ public class Spawner : MonoBehaviour
             {
                 scc.StartColorChange(ColorOnDeath, DeathColorChangeTime);
             }
+
+            // Stop ray cast collisions in order to allow bullets to pass
+            // through the object since it is now dead.
+            gameObject.layer = 2;
+            collider.enabled = false;
         }
 
         if (State == SpawnerState.Idle && Time.timeSinceLevelLoad - LastSpawnTime > NextSpawnTime)

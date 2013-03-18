@@ -38,7 +38,7 @@ public class AIJumper : CharacterController2D
     {
         base.Update();
 
-        if(GetComponent<Health>().IsDead())
+        if(Health.IsDead())
         {
             return;
         }
@@ -143,6 +143,8 @@ public class AIJumper : CharacterController2D
                 GetComponent<Health>().Kill();
 
                 Controller.enabled = false;
+                gameObject.collider.enabled = false;
+                gameObject.layer = 2;
             }
         }
     }
@@ -158,12 +160,14 @@ public class AIJumper : CharacterController2D
     //============================================================================================================================================================================================//
     protected override void ChooseAnimation()
     {
-        if(GetComponent<Health>().IsDead())
+        if(Health.IsDead())
         {
             PlayAnimation("Jumper_Death");
 
             // Prevent any collisions from occuring after he is dead.
             Controller.enabled = false;
+            gameObject.collider.enabled = false;
+            gameObject.layer = 2;
 
             tk2dAnimatedSprite sprite = GetComponent<tk2dAnimatedSprite>();
             if(sprite)

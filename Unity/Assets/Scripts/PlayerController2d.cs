@@ -13,6 +13,10 @@ public class PlayerController2d : CharacterController2D
         public bool FirePressed;
         public Vector3 XAxis;
     }
+
+    public float TimeInAir = 0.0f; // Exposed for debuging.
+    public float TimeToFall = 0.2f;
+    public float FallDistance = 1.5f;
  
     //============================================================================================================================================================================================//
     protected override void Awake ()
@@ -45,15 +49,24 @@ public class PlayerController2d : CharacterController2D
 
             if (info.JumpPressed)
             {
+                TimeInAir = TimeToFall;
                 JumpPressed = true;
+
+            }
+            else if(!JumpPressed)
+            {
+                TimeInAir = 0.0f;
             }
         }
         else
         {
+            TimeInAir += Time.deltaTime;
+
             if (info.JumpPressed)
             {
                 if (JumpCount < 2)
                 {
+                    TimeInAir = TimeToFall;
                     JumpPressed = true;
                 }
             }
@@ -72,12 +85,23 @@ public class PlayerController2d : CharacterController2D
     //============================================================================================================================================================================================//
     protected override void ChooseAnimation()
     {
+        float width = Sprite.GetBounds ().extents.x;
+
+        Vector3 inFront = transform.position;
+        inFront.x += (int)transform.localScale.x * width;
+
+        Debug.DrawLine (inFront, inFront + new Vector3(0, -FallDistance, 0));
+
+        // Cast a ray downwards directly in front of the sprite to see if
+        // there is any ground in front of him.
+        bool hit = Physics.Raycast (new Ray (inFront, Vector3.down), FallDistance);
+
         if(Health.IsDead())
         {
             PlayAnimation("Kevin_Death");
             Sprite.animationCompleteDelegate = OnDeathCompleteDelegate;
         }
-        else if(Controller.isGrounded)
+        else if(Controller.isGrounded || (hit && TimeInAir < TimeToFall))
         {
             if (Mathf.Abs(CurrentVelocity.x) >= Mathf.Epsilon)
             {

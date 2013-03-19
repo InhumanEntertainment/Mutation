@@ -63,7 +63,7 @@ public class MutationSettings
 [XmlRoot("Mutation"), System.Serializable]
 public class MutationData
 {
-	static string DataPath = Application.persistentDataPath + "/Mutation.xml";
+	static public string DataPath = Application.persistentDataPath + "/Mutation.xml";
 	
     public MutationSettings Settings = new MutationSettings();	
 	public string CurrentLevel = "";
@@ -88,6 +88,8 @@ public class MutationData
     //=====================================================================================================================================//
     public static MutationData Load()
     {
+        DataPath = Application.persistentDataPath + "/Mutation.xml";
+
         if (File.Exists(DataPath))
         {
 			Debug.Log("Loaded from File: " + DataPath);

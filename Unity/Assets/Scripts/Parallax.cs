@@ -1,5 +1,17 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+
+[System.Serializable]
+public class ParallaxLayer
+{
+    public string Name = "";
+    public float Depth = 0.5f;
+    public Vector3 Offset = new Vector3(0, 0, 0);
+
+    public Color TopColor = Color.white;
+    public Color BottomColor = Color.grey;
+}
 
 [ExecuteInEditMode]
 public class Parallax : MonoBehaviour 
@@ -14,30 +26,9 @@ public class Parallax : MonoBehaviour
     // Other //
     public float Width = 10;
     public float Height = 10;
-    public Vector3 Multiplier;
-    public Vector3 Offset = new Vector3(0, 0, 10);
+    public Vector3 Amount = new Vector3(1, 1, 0);
 
-    public Color _TopColor = Color.white;
-    public Color TopColor
-    {
-        get { return _TopColor; }
-        set
-        {
-            _TopColor = value;
-            UpdateMesh = true;
-        }
-    }
-
-    public Color _BottomColor = Color.grey;
-    public Color BottomColor
-    {
-        get { return _BottomColor; }
-        set
-        {
-            _BottomColor = value;
-            UpdateMesh = true;
-        }
-    }
+    public ParallaxLayer[] Layers;
 
     //======================================================================================================================================//
     void Awake()
@@ -48,52 +39,77 @@ public class Parallax : MonoBehaviour
     //======================================================================================================================================//
     void GenerateMesh()
     {
-        print("Generated Mesh");
+        //print("Generating Mesh:");
+        
+        List<Vector3> Vertices = new List<Vector3>();
+        List<Vector2> Uvs = new List<Vector2>();
+        List<Color> Colors = new List<Color>();
+        Dictionary<int, List<int>> Triangles = new Dictionary<int, List<int>>();
+        
+        for (int i = 0; i < Layers.Length; i++)
+        {
+            //print("Generating Mesh: Layer " + Layers[i].Name);
 
-        // Generate Vertices //
-        Vector3[] Vertices = new Vector3[4];
-        /*Vertices[0] = new Vector3(0, Height, 0);
-        Vertices[1] = new Vector3(0, 0, 0);
-        Vertices[2] = new Vector3(Width, Height, 0);
-        Vertices[3] = new Vector3(Width, 0, 0);*/
+            // Create Vertices //
+            float halfWidth = Width * 0.5f;
+            float halfHeight = Height * 0.5f;
 
-        float halfWidth = Width * 0.5f;
-        float halfHeight = Height * 0.5f;
+            Vector3 layerOffset = Vector3.Scale(Camera.main.transform.position, Amount) * Layers[i].Depth + Layers[i].Offset;
 
-        Vertices[0] = new Vector3(-halfWidth, halfHeight, 0);
-        Vertices[1] = new Vector3(-halfWidth, -halfHeight, 0);
-        Vertices[2] = new Vector3(halfWidth, halfHeight, 0);
-        Vertices[3] = new Vector3(halfWidth, -halfHeight, 0);
+            Vertices.Add(new Vector3(-halfWidth, halfHeight, 0) + layerOffset);
+            Vertices.Add(new Vector3(-halfWidth, -halfHeight, 0) + layerOffset);
+            Vertices.Add(new Vector3(halfWidth, halfHeight, 0) + layerOffset);
+            Vertices.Add(new Vector3(halfWidth, -halfHeight, 0) + layerOffset);
 
-        // Gernerate Indexes //
-        int[] Triangles = new int[6];
-        Triangles[0] = 0;
-        Triangles[1] = 1;
-        Triangles[2] = 2;
-        Triangles[3] = 1;
-        Triangles[4] = 2;
-        Triangles[5] = 3;
+            // Create Uvs //
+            Uvs.Add(new Vector2(0, 1));
+            Uvs.Add(new Vector2(0, 0));
+            Uvs.Add(new Vector2(1, 1));
+            Uvs.Add(new Vector2(1, 0));
 
-        // Gernerate Uvs //
-        Vector2[] Uvs = new Vector2[4];
-        Uvs[0] = new Vector2(0, 1);
-        Uvs[1] = new Vector2(0, 0);
-        Uvs[2] = new Vector2(1, 1);
-        Uvs[3] = new Vector2(1, 0);
+            // Create Colors //
+            Colors.Add(Layers[i].TopColor);
+            Colors.Add(Layers[i].BottomColor);
+            Colors.Add(Layers[i].TopColor);
+            Colors.Add(Layers[i].BottomColor);
 
-        // Gernerate Colors //
-        Color[] Colors = new Color[4];
-        Colors[0] = TopColor;
-        Colors[1] = BottomColor;
-        Colors[2] = TopColor;
-        Colors[3] = BottomColor;      
+            // Create Triangles //
+            Triangles[i] = new List<int>();
+            Triangles[i].Add(Vertices.Count - 4);
+            Triangles[i].Add(Vertices.Count - 3);
+            Triangles[i].Add(Vertices.Count - 2);
+            Triangles[i].Add(Vertices.Count - 3);
+            Triangles[i].Add(Vertices.Count - 2);
+            Triangles[i].Add(Vertices.Count - 1);
+        }
 
         // Generate Mesh //
-        Mesh = new Mesh();
-        Mesh.vertices = Vertices;
-        Mesh.uv = Uvs;
-        Mesh.triangles = Triangles;
-        Mesh.colors = Colors;
+        if (Mesh == null)
+        {
+            Mesh = new Mesh();        
+        }
+        else
+        {
+            Mesh.Clear();
+        }
+
+        Mesh.vertices = Vertices.ToArray();
+        Mesh.uv = Uvs.ToArray();
+        Mesh.colors = Colors.ToArray();
+
+        if (Layers.Length == 1)
+        {
+            Mesh.triangles = Triangles[0].ToArray();
+        }
+        else
+        {
+            Mesh.subMeshCount = Layers.Length;
+            for (int i = 0; i < Layers.Length; i++)
+            {
+                Mesh.SetTriangles(Triangles[i].ToArray(), i);
+            }
+        }
+
         Mesh.RecalculateNormals();
         Mesh.RecalculateBounds();
         Mesh.Optimize();
@@ -112,12 +128,12 @@ public class Parallax : MonoBehaviour
     //======================================================================================================================================//
     void Update()
     {
-        if (UpdateMesh)
-        {
+        //if (UpdateMesh)
+        //{
             GenerateMesh();
-            UpdateMesh = false;
-        }
+            //UpdateMesh = false;
+        //}
 
-        transform.position = Vector3.Scale(Camera.main.transform.position, Multiplier) + Offset;   
+        //transform.position = Vector3.Scale(Camera.main.transform.position, Amount) + Offset;   
 	}
 }

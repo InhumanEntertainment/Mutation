@@ -1,11 +1,13 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Game : MonoBehaviour 
 {
     static public Game Instance;
 
     public int TargetFramerate = 60;
+    float FPS = 60;
     public PlayerController2d Player;
     public PlayerController2d PlayerPrefab;
     public bool TouchControls = false;
@@ -38,8 +40,9 @@ public class Game : MonoBehaviour
 	// Data //
 	public MutationData Data;
 
-    float FPS = 60;
-
+    // Inventory //
+    public List<string> Inventory = new List<string>();
+    
     //============================================================================================================================================================================================//
     void Awake()
     {
@@ -93,7 +96,7 @@ public class Game : MonoBehaviour
         // Update FPS Counter //
         if (FPSObject != null)
         {
-            FPS = Mathf.Lerp(FPS, Time.deltaTime > 0 ? 1f / Time.deltaTime : 0, 0.05f);
+            FPS = Mathf.Lerp(FPS, Time.deltaTime > 0 ? 1f / Time.deltaTime : 0, 0.03f);
             FPSObject.text = FPS.ToString("N0");
             FPSObject.Commit();
         }       
@@ -310,6 +313,7 @@ public class Game : MonoBehaviour
         }
 
         CurrentLevel = level;
+        Inventory.Clear();
         Time.timeScale = 1;
         if(null != DoorTransition)
         {

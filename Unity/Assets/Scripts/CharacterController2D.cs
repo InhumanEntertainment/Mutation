@@ -248,4 +248,13 @@ public abstract class CharacterController2D : MonoBehaviour
             return Health;
         }
     }
+
+    //============================================================================================================================================================================================//
+    public Vector3 Velocity
+    {
+        get
+        {
+            return CurrentVelocity;
+        }
+    }
 }

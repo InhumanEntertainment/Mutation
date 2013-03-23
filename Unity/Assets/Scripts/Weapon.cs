@@ -63,13 +63,17 @@ public class Weapon : MonoBehaviour
 	/// </summary>
 	private ChargeShotProfile CurrentChargeShotProfile;
 
-    
+    /// <summary>
+    /// When a fire event happens, a bullet will be fired at all the following
+    /// angles in the same frame.
+    /// </summary>
+    public List<float> FiringAngles;
 	
 	//============================================================================================================================================================================================//
 	public void Awake()
 	{
 		FiringDelay = 1.0f / RateOfFire;
-        Player = transform.parent.GetComponent<PlayerController2d>();		
+        Player = transform.parent.GetComponent<PlayerController2d>();
 	}
 
     //============================================================================================================================================================================================//
@@ -114,13 +118,14 @@ public class Weapon : MonoBehaviour
 				if(CurrentChargeShotProfile != null)
 				{
 					float dir = -GetPlayerDirection();
-					
-					for(int i = 0; i < CurrentChargeShotProfile.NumBullets; i++)
-					{
-						FireBullet(
-							CurrentChargeShotProfile.BulletAngleVariance, 
-							CurrentChargeShotProfile.BulletSpeedVariance);
-					}
+
+                    for(int i = 0 ; i < FiringAngles.Count; i++)
+                    {
+    					for(int j = 0; j < CurrentChargeShotProfile.NumBullets; j++)
+    					{
+    						FireBullet(CurrentChargeShotProfile, FiringAngles[i]);
+    					}
+                    }
 				}
 				
 				// Even if we didn't hold the button long enough, the charge needs to
@@ -157,20 +162,19 @@ public class Weapon : MonoBehaviour
 	/// <param name='speedVariance'>
 	/// A scalar amount that the speed of teh bullet can vary from standard bullet speed.
 	/// </param>
-	private void FireBullet(float spread, float speedVariance)
+	private void FireBullet(ChargeShotProfile shotProfile, float angle)
 	{		
 		float angleRand = Random.value;
         float direction = GetPlayerDirection();
-		
-		float angle = 0.0f;
+        float spread = shotProfile.BulletAngleVariance * Mathf.Deg2Rad;
+        float speedVariance = shotProfile.BulletSpeedVariance;
+        angle *= Mathf.Deg2Rad;
 		
 		if(direction < 0.0f)
 		{
-			angle = Mathf.PI;
+			angle = Mathf.PI - angle;
 		}
-		
-		spread *= Mathf.Deg2Rad;
-		
+
 		// Offset by a random amount within the spread range.
 		float offset = (angleRand * spread) - (spread * 0.5f);
 		angle += offset;
@@ -186,8 +190,8 @@ public class Weapon : MonoBehaviour
 		float finalSpeed = BulletSpeed * speedRand;
 		
 		Vector3 finalVel = new Vector3(
-            finalDir.x * finalSpeed,// + Player.rigidbody.velocity.x, 
-			finalDir.y * finalSpeed, 
+            finalDir.x * finalSpeed,// + Player.Velocity.x,
+			finalDir.y * finalSpeed,
 			0);
 
         Vector3 spawnPosition = transform.position + new Vector3(BulletSpawnOffset.x * direction, BulletSpawnOffset.y, 0);

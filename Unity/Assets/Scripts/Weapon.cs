@@ -133,6 +133,12 @@ public class Weapon : MonoBehaviour
 				CurrentChargeTime = 0;
             } 
 		}
+        else
+        {
+            // Allow all weapons to fire as fast as the user can button mash so that
+            // they never feel like the game is unresponsive.
+            TimeSinceLastFire = FiringDelay;
+        }
 	}
 	
 	/// <summary>

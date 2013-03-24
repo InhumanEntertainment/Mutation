@@ -163,7 +163,6 @@ public class Weapon : MonoBehaviour
         GameObject bullet = Game.Spawn(BulletObjectTemplate, spawnPosition, Quaternion.identity) as GameObject;
 
 		bullet.rigidbody.velocity = finalVel;
-        bullet.transform.localScale = new Vector3(direction, 1, 1);
 
         // Play FX //
         MuzzleSprite.Play();

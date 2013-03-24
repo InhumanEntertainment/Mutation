@@ -14,6 +14,8 @@ public class Bullet : MonoBehaviour
 
     public GameObject SpawnOnHit;
 
+    public bool FaceForward = false;
+
     //============================================================================================================================================================================================//
     /*void OnCollisionEnter(Collision collision)
     {
@@ -95,6 +97,15 @@ public class Bullet : MonoBehaviour
             Vector3 direction = (transform.position - LastPosition).normalized;
             Vector3 offset = new Vector3(direction.x * 2, 0, 0); // Shift ray back for when enemies are close to you //
 
+            // Turn the bullet to face forward.
+            // Note: This will not work for sprites which are already being flipped to
+            //       face directions.
+            if(FaceForward)
+            {
+                float angle = Mathf.Atan2(direction.y, direction.x);
+                transform.rotation = Quaternion.AngleAxis(angle * Mathf.Rad2Deg, Vector3.forward);
+            }
+
             Ray ray = new Ray(LastPosition - offset, direction);
             RaycastHit hit = new RaycastHit();
 
@@ -106,7 +117,7 @@ public class Bullet : MonoBehaviour
             }
 
             LastPosition = transform.position;
-        }        
+        }
 	}
 
     //============================================================================================================================================================================================//

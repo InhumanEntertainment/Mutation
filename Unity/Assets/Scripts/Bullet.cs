@@ -12,6 +12,8 @@ public class Bullet : MonoBehaviour
 
     public bool DestroyOnCollision = true;
 
+    public GameObject SpawnOnHit;
+
     //============================================================================================================================================================================================//
     /*void OnCollisionEnter(Collision collision)
     {
@@ -138,6 +140,11 @@ public class Bullet : MonoBehaviour
             Quaternion rotation = new Quaternion();//.AngleAxis(angle, Vector3.back);
             rotation.SetLookRotation(normal);
             Game.Spawn(FX, point, rotation);
+        }
+
+        if(null != SpawnOnHit)
+        {
+            Game.Spawn(SpawnOnHit, transform.position, Quaternion.identity);
         }
     }
 }

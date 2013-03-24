@@ -70,11 +70,11 @@ public class Weapon : MonoBehaviour
     public List<float> FiringAngles;
 	
 	//============================================================================================================================================================================================//
-	public void Awake()
-	{
-		FiringDelay = 1.0f / RateOfFire;
+    public void Start()
+    {
+        FiringDelay = 1.0f / RateOfFire;
         Player = transform.parent.GetComponent<PlayerController2d>();
-	}
+    }
 
     //============================================================================================================================================================================================//
     public void Update()

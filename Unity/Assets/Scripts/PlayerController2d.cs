@@ -17,6 +17,8 @@ public class PlayerController2d : CharacterController2D
     public float TimeInAir = 0.0f; // Exposed for debuging.
     public float TimeToFall = 0.2f;
     public float FallDistance = 1.5f;
+    public Vector3 GunAttachOffset = new Vector3(1.2f, 2.0f, 0.0f);
+    public GameObject CurrentGun;
  
     //============================================================================================================================================================================================//
     protected override void Awake ()
@@ -229,5 +231,34 @@ public class PlayerController2d : CharacterController2D
         sprite.animationCompleteDelegate = null;
 
         Game.Instance.GameOver();
+    }
+
+    //============================================================================================================================================================================================//
+    public Vector3 GunAttachPoint
+    {
+        get
+        {
+            Vector3 offset = GunAttachOffset;
+            offset.x *= transform.localScale.x;
+            return offset + transform.position;
+        }
+    }
+
+    //============================================================================================================================================================================================//
+    public GameObject Gun
+    {
+        get
+        {
+            return CurrentGun;
+        }
+        set
+        {
+            if(CurrentGun)
+            {
+                Destroy(CurrentGun);
+            }
+
+            CurrentGun = value;
+        }
     }
 }

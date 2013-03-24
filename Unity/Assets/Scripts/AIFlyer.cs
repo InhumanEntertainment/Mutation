@@ -20,10 +20,6 @@ public class AIFlyer : CharacterController2D
 
     public ActionState State = ActionState.Idle;
     
-    /// <summary>
-    /// The direction this object is currently moving.
-    /// </summary>
-    private Direction Dir = Direction.Left;
     public float AttackRange = 10.0f;
 
     public float DisengageRange = 20.0f;

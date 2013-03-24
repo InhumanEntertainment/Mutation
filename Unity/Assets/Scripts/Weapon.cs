@@ -26,12 +26,7 @@ public class Weapon : MonoBehaviour
 	/// How much time has passed since the last time a bullet was fired.
 	/// </summary>
     private float TimeSinceLastFire = 0;
-	
-	/// <summary>
-	/// How long has the player been holding the Fire button.
-	/// </summary>
-	private float CurrentChargeTime = 0.0f;
-	
+
 	/// <summary>
 	/// The speed at which a bullet moves per scond.
 	/// </summary>
@@ -48,20 +43,9 @@ public class Weapon : MonoBehaviour
     public Vector2 BulletSpawnOffset;
 	
 	/// <summary>
-	/// Little hack to get the color to flicker when a shot is charged.
+	/// Defines how bullets are fired.
 	/// </summary>
-	private int ChargeFlickerCount = 0;
-	
-	/// <summary>
-	/// List of all the charge shot profiles that this Weapon can use.
-	/// </summary>
-	public List<ChargeShotProfile> ChargeShots;
-	
-	/// <summary>
-	/// Based on the time the user has held the Fire button, it will
-	/// store the current charge profile here.
-	/// </summary>
-	private ChargeShotProfile CurrentChargeShotProfile;
+	public WeaponShotProfile ShotProfile;
 
     /// <summary>
     /// When a fire event happens, a bullet will be fired at all the following
@@ -87,24 +71,6 @@ public class Weapon : MonoBehaviour
 		// back to 0.
         TimeSinceLastFire += Time.deltaTime;
 		
-		if (Player.GetControllerInfo().FirePressed)
-		{
-			CurrentChargeTime += Time.deltaTime;
-		}
-		
-		// Choose which charge profile is active right now. Assumes that they are 
-		// sorted in order of charge time.
-		CurrentChargeShotProfile = null;
-		foreach(ChargeShotProfile pro in ChargeShots)
-		{
-			if(CurrentChargeTime >= pro.TimeRequired)
-			{
-				CurrentChargeShotProfile = pro;
-			}
-		}
-		
-		PerformChargeFlicker();
-		
 		// The player taps the button to fire bullets as fast as possible.
         if (Player.GetControllerInfo().FirePressed)
 		{
@@ -115,23 +81,16 @@ public class Weapon : MonoBehaviour
 				// time a bullet was fired.
 				TimeSinceLastFire = 0;
 				
-				if(CurrentChargeShotProfile != null)
-				{
-					float dir = -GetPlayerDirection();
+				float dir = -GetPlayerDirection();
 
-                    for(int i = 0 ; i < FiringAngles.Count; i++)
-                    {
-    					for(int j = 0; j < CurrentChargeShotProfile.NumBullets; j++)
-    					{
-    						FireBullet(CurrentChargeShotProfile, FiringAngles[i]);
-    					}
-                    }
-				}
-				
-				// Even if we didn't hold the button long enough, the charge needs to
-				// start from scratch since the button was released.
-				CurrentChargeTime = 0;
-            } 
+                for(int i = 0 ; i < FiringAngles.Count; i++)
+                {
+					for(int j = 0; j < ShotProfile.NumBullets; j++)
+					{
+						FireBullet(ShotProfile, FiringAngles[i]);
+					}
+                }
+            }
 		}
         else
         {
@@ -168,7 +127,7 @@ public class Weapon : MonoBehaviour
 	/// <param name='speedVariance'>
 	/// A scalar amount that the speed of teh bullet can vary from standard bullet speed.
 	/// </param>
-	private void FireBullet(ChargeShotProfile shotProfile, float angle)
+	private void FireBullet(WeaponShotProfile shotProfile, float angle)
 	{		
 		float angleRand = Random.value;
         float direction = GetPlayerDirection();
@@ -217,47 +176,5 @@ public class Weapon : MonoBehaviour
 
         // Play Sound //
         Audio.PlaySound("Player Shoot");
-	}
-	
-	/// <summary>
-	/// Cause the Player to flicker a color based on the current charge profile.
-	/// </summary>
-	private void PerformChargeFlicker()
-	{
-		// If the ChargeProfile is set then start flickering the color.
-		if(CurrentChargeShotProfile != null)
-		{
-			ChargeFlickerCount++;
-			
-			Player player = GetComponent<Player>();
-			
-			if(player != null)
-			{
-				// Little hack to make the color change based on frame count.
-				// Should be a real timer, but I'm lazy.
-				if( ChargeFlickerCount < 4)
-				{
-					player.Sprite.color = CurrentChargeShotProfile.Flicker;
-				}
-				else if(ChargeFlickerCount < 8)
-				{
-					player.Sprite.color = Color.white;
-				}
-				else if(ChargeFlickerCount >= 8)
-				{
-					ChargeFlickerCount = 0;
-				}
-			}
-		}
-		else
-		{
-			// The profile is not set so go back to White.
-			Player player = GetComponent<Player>();
-			
-			if(player != null)
-			{
-				player.Sprite.color = Color.white;
-			}
-		}
 	}
 }

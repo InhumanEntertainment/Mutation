@@ -128,7 +128,7 @@ public class Bullet : MonoBehaviour
             Destroy(gameObject);
         }
         
-        if (collider.rigidbody != null)
+        if (collider.rigidbody != null && rigidbody != null)
         {
             collider.rigidbody.AddForceAtPosition(rigidbody.velocity * 100, point);
         }

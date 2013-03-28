@@ -7,6 +7,8 @@ public class MovingPlatform : MonoBehaviour {
 
     public bool Loop = true;
 
+    public float Speed = 4.0f;
+
     private Vector3 StartPos;
     private Vector3 EndPos;
     private Vector3 WantedVelocity;
@@ -20,8 +22,8 @@ public class MovingPlatform : MonoBehaviour {
     private Destination CurrentDest = Destination.End;
 
 	// Use this for initialization
-	void Start () {
-
+	void Start ()
+    {
         StartPos = transform.position;
         EndPos = transform.position + RelativeDestination;
 	}
@@ -35,7 +37,7 @@ public class MovingPlatform : MonoBehaviour {
         {
             toDest = EndPos - transform.position;
 
-            if(Loop && toDest.sqrMagnitude < 10.0f)
+            if(Loop && toDest.sqrMagnitude < 0.001f)
             {
                 CurrentDest = Destination.Start;
             }
@@ -46,7 +48,7 @@ public class MovingPlatform : MonoBehaviour {
         {
             toDest = StartPos - transform.position;
 
-            if(Loop && toDest.sqrMagnitude < 10.0f)
+            if(Loop && toDest.sqrMagnitude < 0.001f)
             {
                 CurrentDest = Destination.End;
             }
@@ -54,7 +56,7 @@ public class MovingPlatform : MonoBehaviour {
             toDest.Normalize();
         }
 
-        WantedVelocity = (toDest * Time.deltaTime);
+        WantedVelocity = (toDest * Speed * Time.deltaTime);
 	}
 
     void FixedUpdate()

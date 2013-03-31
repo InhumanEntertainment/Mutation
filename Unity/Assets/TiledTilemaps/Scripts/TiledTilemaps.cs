@@ -543,6 +543,7 @@ public class TiledTilemaps : MonoBehaviour
     //============================================================================================================================================//
     void BuildCollision()
     {
+        /*
 		// Destroy any collision mesh that might already have been created.
         int childs = transform.childCount;
         for (int i = childs - 1; i > 0; i--)
@@ -550,9 +551,10 @@ public class TiledTilemaps : MonoBehaviour
 			DestroyImmediate(transform.GetChild(i).gameObject);
             //Destroy(transform.GetChild(i).gameObject);
         }
-		
+		*/
 		System.Diagnostics.Debug.Assert(transform.childCount == 0, "Not all colliders were cleaned up before generating new level colliders.");
-		
+
+        /*
 		for (int curveIndex = 0; curveIndex < CollisionCurves.Count; curveIndex++)
 		{
 			int[] tris = new int[6] { 0, 1, 2, 2, 1, 3 };
@@ -611,8 +613,8 @@ public class TiledTilemaps : MonoBehaviour
 				newObj.transform.parent = this.transform;
 			}
 		}
-		
-		/*
+		*/
+
         List<Vector3> AllVertices = new List<Vector3>();
         List<int> AllTriangles = new List<int>();
 
@@ -662,6 +664,6 @@ public class TiledTilemaps : MonoBehaviour
         meshCollider.sharedMesh = collisionmesh;
 		
 		meshCollider.material = (PhysicMaterial)Resources.Load("Materials/Floor");
-		*/
+
     }
 }

@@ -150,7 +150,7 @@ public class Bullet : MonoBehaviour
             //print(angle);
             Quaternion rotation = new Quaternion();//.AngleAxis(angle, Vector3.back);
             rotation.SetLookRotation(normal);
-            Game.Spawn(FX, point, rotation);
+            Game.Spawn(FX, point, rotation, false);
         }
 
         if(null != SpawnOnHit)

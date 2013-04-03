@@ -24,14 +24,6 @@ public class PlayerController2d : CharacterController2D
     protected override void Awake ()
     {
         base.Awake();
-
-        // Singleton: Destroy all others //
-        Object[] players = FindObjectsOfType(typeof(PlayerController2d));
-        for (int i = 0; i < players.Length; i++)
-        {
-            if (players[i] != this)
-                Destroy((players[i] as PlayerController2d).gameObject);            
-        }
     }
  
     //============================================================================================================================================================================================//

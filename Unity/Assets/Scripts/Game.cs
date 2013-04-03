@@ -69,14 +69,31 @@ public class Game : MonoBehaviour
                 }
             }
 
+            if(null == Player)
+            {
+                // Destroy any Players that may have existed prior to this one.
+                Object[] players = FindObjectsOfType(typeof(PlayerController2d));
+
+                for (int i = 0; i < players.Length; i++)
+                {
+                    Destroy((players[i] as PlayerController2d).gameObject);
+                }
+
+                Vector3 startPos = Vector3.zero;
+
+                GameLevel level = GameObject.FindObjectOfType(typeof(GameLevel)) as GameLevel;
+                if(null != level)
+                {
+                    startPos = level.CheckPoints[0].position;
+                }
+
+                Player = Game.Spawn(PlayerPrefab, startPos, Quaternion.identity, true) as PlayerController2d;
+            }
+
 			// Mute Music if Ipod is playing already //
             //if (InhumanIOS.IsMusicPlaying())
                 //Audio.MusicMute = true;		
 		}
-		else
-        {
-            Destroy(this.gameObject);
-        }   
 	}
 	
 	//============================================================================================================================================================================================//
@@ -131,9 +148,10 @@ public class Game : MonoBehaviour
             {
                 Game.Instance.Data.CurrentLevel = level.name; 
                 Game.Instance.Data.CurrentCheckPoint = level.CheckPoints[0].name;			
-            }			
-			
-            Player = Game.Spawn(PlayerPrefab, checkpoint, Quaternion.identity) as PlayerController2d;
+            }
+
+            Player.transform.position = checkpoint;
+
             Camera.main.transform.position = Player.transform.position;
 
             if (level.MusicTrack != "")
@@ -332,20 +350,34 @@ public class Game : MonoBehaviour
     //============================================================================================================================================================================================//
     // Spawn objects into group so they can be easily cleanup up //
     //============================================================================================================================================================================================//
+    static public Object Spawn(Object original, Vector3 position)
+    {
+        return Game.Spawn(original, position, Quaternion.identity, false);
+    }
+
     static public Object Spawn(Object original, Vector3 position, Quaternion rotation)
     {
-        Object obj = Instantiate(original, position, rotation);
-        GameObject objectsGroup = GameObject.Find("Objects");
-        if (objectsGroup != null)
-        {
-            Transform xform = null;
-            if (obj is GameObject)
-                xform = ((GameObject)obj).transform;
-            else if (obj is Component)
-                xform = ((Component)obj).transform;
+        return Game.Spawn(original, position, rotation, false);
+    }
 
-            if (xform != null)
-                xform.parent = objectsGroup.transform;
+    static public Object Spawn(Object original, Vector3 position, Quaternion rotation, bool isPermanent)
+    {
+        Object obj = Instantiate(original, position, rotation);
+
+        if(!isPermanent)
+        {
+            GameObject objectsGroup = GameObject.Find("Objects");
+            if (objectsGroup != null)
+            {
+                Transform xform = null;
+                if (obj is GameObject)
+                    xform = ((GameObject)obj).transform;
+                else if (obj is Component)
+                    xform = ((Component)obj).transform;
+    
+                if (xform != null)
+                    xform.parent = objectsGroup.transform;
+            }
         }
 
         return obj;

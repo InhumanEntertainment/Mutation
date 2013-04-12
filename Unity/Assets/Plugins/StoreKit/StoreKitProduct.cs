@@ -1,10 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Prime31;
-
 
 #if UNITY_IPHONE
+using Prime31;
+
 public class StoreKitProduct
 {
     public string productIdentifier;

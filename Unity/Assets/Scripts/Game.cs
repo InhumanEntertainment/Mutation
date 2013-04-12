@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
+
 public class Game : MonoBehaviour 
 {
     static public Game Instance;
@@ -39,6 +40,7 @@ public class Game : MonoBehaviour
 	
 	// Data //
 	public MutationData Data;
+    public MutationSocial Social = new MutationSocial();   
 
     // Inventory //
     public List<string> Inventory = new List<string>();
@@ -92,7 +94,10 @@ public class Game : MonoBehaviour
 
 			// Mute Music if Ipod is playing already //
             //if (InhumanIOS.IsMusicPlaying())
-                //Audio.MusicMute = true;		
+                //Audio.MusicMute = true;	
+	
+            // Connect to GameCenter //
+            Social.Authenticate();
 		}
 	}
 	
@@ -311,6 +316,14 @@ public class Game : MonoBehaviour
         print("Frontend: Twitter");
 
         Application.OpenURL("http://twitter.com/InhumanEnt");
+    }
+
+    //============================================================================================================================================================================================//
+    public void GameCenter()
+    {
+        print("Frontend: GameCenter");
+
+        UnityEngine.Social.ShowAchievementsUI();
     }
 
     //============================================================================================================================================================================================//

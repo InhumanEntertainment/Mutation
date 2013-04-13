@@ -1,4 +1,3 @@
-
 /Unity/Library
 /Unity/obj
 /Unity/Assembly-CSharp-Editor-vs.csproj
@@ -9,6 +8,7 @@
 /Unity/Unity-csharp.suo
 /Unity/Unity.sln
 /Unity/Temp
+/Unity/Build
 /Build
 /Unity/Assets/-tk2d
 /Unity/Assets/Resources/tk2d/*

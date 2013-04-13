@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<BuildManager xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Current>2</Current>
+  <Builds>
+    <Build>
+      <Name>Mutation</Name>
+      <Version>0.6</Version>
+      <BundleId>com.inhuman.mutation</BundleId>
+      <Path>Build/Android/</Path>
+      <Target>Android</Target>
+      <Options>CompressTextures</Options>
+      <Script />
+      <ScriptCommand />
+      <Aspect>Free</Aspect>
+      <Icon>8fff0290eb77475438789d93f643a35d</Icon>
+      <Splash>8bcb6e64c62e08140b5ffbe34c1f0370</Splash>
+    </Build>
+    <Build>
+      <Name>Mutation</Name>
+      <Version>0.6</Version>
+      <BundleId>com.inhuman.mutation</BundleId>
+      <Path>Build/iOS/</Path>
+      <Target>iPhone</Target>
+      <Options>AutoRunPlayer ShowBuiltPlayer</Options>
+      <Script />
+      <ScriptCommand />
+      <Aspect>Free</Aspect>
+      <Icon>11a72ac5525002b4285e4e5ddffb25bd</Icon>
+      <Splash>8bcb6e64c62e08140b5ffbe34c1f0370</Splash>
+    </Build>
+    <Build>
+      <Name>Mutation</Name>
+      <Version>0.6</Version>
+      <BundleId>com.inhuman.mutation</BundleId>
+      <Path>Build/WIN/</Path>
+      <Target>StandaloneWindows</Target>
+      <Options>AutoRunPlayer ShowBuiltPlayer</Options>
+      <Script />
+      <ScriptCommand />
+      <Aspect>Free</Aspect>
+      <Icon>a6db7a266a94e9b448d504dbaf34a4c2</Icon>
+      <Splash>51a2ba67475b70a46813e1c5d563f8f3</Splash>
+    </Build>
+  </Builds>
+</BuildManager>

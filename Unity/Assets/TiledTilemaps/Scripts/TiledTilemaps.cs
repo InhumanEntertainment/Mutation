@@ -25,6 +25,7 @@ public class TiledTilemaps : MonoBehaviour
 		set {
 			_cameraOrthoSize = value;
 			reloadAndCommit = true;
+
 			Update();
 		}
 	}
@@ -106,12 +107,13 @@ public class TiledTilemaps : MonoBehaviour
 	public Texture[] TilesetsTextures;	
 	public Material[] TilesetsMaterials;
 
+#if UNITY_EDITOR
     private XmlDocument _xml;
-
+#endif
 
     // Collision //
     List<List<Vector2>> CollisionCurves = new List<List<Vector2>>();
-
+#if UNITY_EDITOR
     //============================================================================================================================================//
     bool LoadTiledXML()
     {
@@ -127,19 +129,22 @@ public class TiledTilemaps : MonoBehaviour
 		
         return false;
     }
-
+#endif
     //============================================================================================================================================//
     void Awake()
 	{
 		if(meshObject == null)
 		{
 			meshObject = gameObject;
-			_xml = new XmlDocument();			
+#if UNITY_EDITOR
+			_xml = new XmlDocument();
+#endif
 			mainCamera = Camera.mainCamera;
 		}
 	}   
 
     //============================================================================================================================================//
+#if UNITY_EDITOR
     void ImportTiledXML()
     {		
         if(LoadTiledXML())
@@ -262,10 +267,12 @@ public class TiledTilemaps : MonoBehaviour
 			}
 		}
     }
-    
+#endif
+
     //============================================================================================================================================//
     void Update()
     {   
+#if UNITY_EDITOR
 		if(reloadAndCommit)
 		{		
 			if(_xml == null) _xml = new XmlDocument();
@@ -307,9 +314,11 @@ public class TiledTilemaps : MonoBehaviour
 			}
 			
 			if (reloadAndCommit) reloadAndCommit = false;
-        }		
+        }	
+#endif
     }
 
+#if UNITY_EDITOR
     //============================================================================================================================================//
     void GenerateTilemap()
 	{		
@@ -462,11 +471,9 @@ public class TiledTilemaps : MonoBehaviour
 		mesh.Optimize();
 		
 		if(_generateMeshCollider)
-		{
+        {
             BuildCollision();
-
-           
-		}
+        }
 		
 		meshRenderer.materials = TilesetsMaterials;
 	}
@@ -666,4 +673,5 @@ public class TiledTilemaps : MonoBehaviour
 		meshCollider.material = (PhysicMaterial)Resources.Load("Materials/Floor");
 
     }
+#endif
 }

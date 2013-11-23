@@ -110,7 +110,7 @@ static public class NGUIMath
 	static public string DecimalToHex (int num)
 	{
 		num &= 0xFFFFFF;
-#if UNITY_FLASH
+#if UNITY_FLASH || UNITY_WP8
 		StringBuilder sb = new StringBuilder();
 		sb.Append(DecimalToHexChar((num >> 20) & 0xF));
 		sb.Append(DecimalToHexChar((num >> 16) & 0xF));

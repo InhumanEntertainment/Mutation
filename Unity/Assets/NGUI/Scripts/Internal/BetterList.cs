@@ -12,7 +12,7 @@ using System.Collections.Generic;
 
 public class BetterList<T>
 {
-#if UNITY_FLASH
+#if UNITY_FLASH || UNITY_WP8
 
 	List<T> mList = new List<T>();
 	

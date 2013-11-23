@@ -1,15 +1,20 @@
 // Swarming Prototype //
 // Move away from every other entity //
 // Creat list of previous velocities //
-
+/*
 public class Entity
 {
 	public Vector3 Velocity;
 	public Vector3 Acceleration;
 	public Vector3 RandomAcceleration;
-	public float Radius;
+	public float Radius = 5;
+	public float Force = 10;
 	
-	
+	//============================================================================================================================================//
+    void OnDrawGizmos()
+	{
+		Gizmos.DrawSphere(transform.position, Radius);
+	}
 }
 
 public class EntityManager
@@ -17,13 +22,15 @@ public class EntityManager
 	public GameObject EntityPrefab;
 	public List<Entity> Entities = new List<Entity>();
 	
-	public Entity CreateEntity()
+	//============================================================================================================================================//
+    public Entity CreateEntity()
 	{
 		Entity entity = Instatiate(EntityPrefab);
 		Entities.Add(entity);
 	}
 	
-	void Update()
+	//============================================================================================================================================//
+    void Update()
 	{
 		Vector3[] PreviousVelocity = new Vector3[Entities.Count]
 		
@@ -57,3 +64,4 @@ public class EntityManager
 		}
 	}
 }
+*/

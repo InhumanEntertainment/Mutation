@@ -20,3 +20,6 @@
 *.csproj
 
 *.unityproj
+Unity/Assets/TK2DROOT/tk2d_demo/
+Unity/Assets/TK2DROOT/tk2dUI_demo/*
+Unity/Assets/TK2DROOT/tk2dTileMap_demo/*

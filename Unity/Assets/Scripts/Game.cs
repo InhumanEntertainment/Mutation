@@ -40,7 +40,8 @@ public class Game : MonoBehaviour
 	
 	// Data //
 	public MutationData Data;
-    public MutationSocial Social = new MutationSocial();   
+    public MutationSocial Social = new MutationSocial();
+    public bool FullVersion = true;
 
     // Inventory //
     public List<string> Inventory = new List<string>();
@@ -62,7 +63,7 @@ public class Game : MonoBehaviour
 			Data = MutationData.Load();
 
             // Hide touch controls on pc //
-            if (!(TouchControls || Application.platform == RuntimePlatform.IPhonePlayer || Application.platform == RuntimePlatform.Android))
+            if (!(TouchControls || Application.platform == RuntimePlatform.IPhonePlayer || Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.WP8Player))
             {
                 for (int i = 0; i < Game.Instance.TouchButtons.Length; i++)
                 {

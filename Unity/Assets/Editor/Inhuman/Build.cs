@@ -32,7 +32,7 @@ namespace Inhuman
             { BuildTarget.StandaloneWindows64, ".exe" },
             { BuildTarget.Android, ".apk" },
             { BuildTarget.iPhone, ".xcode" },
-            { BuildTarget.MetroPlayerX86, ".zip" },
+            { BuildTarget.MetroPlayer, ".zip" },
             { BuildTarget.StandaloneOSXIntel, ".app" },
             { BuildTarget.WebPlayer, "" },
             { BuildTarget.FlashPlayer, "" },

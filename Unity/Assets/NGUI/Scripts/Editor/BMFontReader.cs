@@ -32,7 +32,7 @@ public static class BMFontReader
 	{
 		int val = 0;
 		string text = GetString(s);
-#if UNITY_FLASH
+#if UNITY_FLASH || UNITY_WP8
 		try { val = int.Parse(text); } catch (System.Exception) { }
 #else
 		int.TryParse(text, out val);

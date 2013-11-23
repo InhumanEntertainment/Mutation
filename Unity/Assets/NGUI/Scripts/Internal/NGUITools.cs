@@ -110,7 +110,7 @@ static public class NGUITools
 
 	static public WWW OpenURL (string url)
 	{
-#if UNITY_FLASH
+#if UNITY_FLASH || UNITY_WP8
 		Debug.LogError("WWW is not yet implemented in Flash");
 		return null;
 #else
@@ -128,7 +128,7 @@ static public class NGUITools
 	static public WWW OpenURL (string url, WWWForm form)
 	{
 		if (form == null) return OpenURL(url);
-#if UNITY_FLASH
+#if UNITY_FLASH || UNITY_WP8
 		Debug.LogError("WWW is not yet implemented in Flash");
 		return null;
 #else

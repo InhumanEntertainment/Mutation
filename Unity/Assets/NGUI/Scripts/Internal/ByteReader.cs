@@ -33,7 +33,7 @@ public class ByteReader
 
 	static string ReadLine (byte[] buffer, int start, int count)
 	{
-#if UNITY_FLASH
+#if UNITY_FLASH || UNITY_WP8
 		// Encoding.UTF8 is not supported in Flash :(
 		StringBuilder sb = new StringBuilder();
 
@@ -147,7 +147,7 @@ public class ByteReader
 			string line = ReadLine();
 			if (line == null) break;
 
-#if UNITY_FLASH
+#if UNITY_FLASH || UNITY_WP8
 			string[] split = line.Split(separator, System.StringSplitOptions.RemoveEmptyEntries);
 #else
 			string[] split = line.Split(separator, 2, System.StringSplitOptions.RemoveEmptyEntries);

@@ -319,7 +319,7 @@ public abstract class UITweener : IgnoreTimeScale
 	static public T Begin<T> (GameObject go, float duration) where T : UITweener
 	{
 		T comp = go.GetComponent<T>();
-#if UNITY_FLASH
+#if UNITY_FLASH || UNITY_WP8
 		if ((object)comp == null) comp = (T)go.AddComponent<T>();
 #else
 		if (comp == null) comp = go.AddComponent<T>();

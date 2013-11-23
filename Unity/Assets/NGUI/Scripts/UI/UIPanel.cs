@@ -60,7 +60,7 @@ public class UIPanel : MonoBehaviour
 	[HideInInspector][SerializeField] Vector2 mClipSoftness = new Vector2(40f, 40f);
 
 	// List of managed transforms
-#if UNITY_FLASH
+#if UNITY_FLASH || UNITY_WP8
 	Dictionary<Transform, UINode> mChildren = new Dictionary<Transform, UINode>();
 #else
 	OrderedDictionary mChildren = new OrderedDictionary();
@@ -236,7 +236,7 @@ public class UIPanel : MonoBehaviour
 	UINode GetNode (Transform t)
 	{
 		UINode node = null;
-#if UNITY_FLASH
+#if UNITY_FLASH || UNITY_WP8
 		if (t != null) mChildren.TryGetValue(t, out node);
 #else
 		if (t != null && mChildren.Contains(t)) node = (UINode)mChildren[t];
@@ -349,7 +349,7 @@ public class UIPanel : MonoBehaviour
 
 	public bool WatchesTransform (Transform t)
 	{
-#if UNITY_FLASH
+#if UNITY_FLASH || UNITY_WP8
 		return t == cachedTransform || mChildren.ContainsKey(t);
 #else
 		return t == cachedTransform || mChildren.Contains(t);
@@ -369,7 +369,7 @@ public class UIPanel : MonoBehaviour
 		while (t != null && t != cachedTransform)
 		{
 			// If the node is already managed, we're done
-#if UNITY_FLASH
+#if UNITY_FLASH || UNITY_WP8
 			if (mChildren.TryGetValue(t, out node))
 			{
 				if (retVal == null) retVal = node;
@@ -402,7 +402,7 @@ public class UIPanel : MonoBehaviour
 	{
 		if (t != null)
 		{
-#if UNITY_FLASH
+#if UNITY_FLASH || UNITY_WP8
 			while (mChildren.Remove(t))
 			{
 #else
@@ -597,7 +597,7 @@ public class UIPanel : MonoBehaviour
 			for (;;)
 			{
 				// Check the parent's flag
-#if UNITY_FLASH
+#if UNITY_FLASH || UNITY_WP8
 				if (trans != null && mChildren.TryGetValue(trans, out sub))
 				{
 #else
@@ -676,7 +676,7 @@ public class UIPanel : MonoBehaviour
 		if (!widgetsAreStatic || mWidgetsAdded || shouldCull != mCulled)
 #endif
 		{
-#if UNITY_FLASH
+#if UNITY_FLASH || UNITY_WP8
 			foreach (KeyValuePair<Transform, UINode> child in mChildren)
 			{
 				UINode node = child.Value;
@@ -713,7 +713,7 @@ public class UIPanel : MonoBehaviour
 
 		if (mCheckVisibility || transformsChanged || mRebuildAll)
 		{
-#if UNITY_FLASH
+#if UNITY_FLASH || UNITY_WP8
 			foreach (KeyValuePair<Transform, UINode> child in mChildren)
 			{
 				UINode pc = child.Value;
@@ -767,7 +767,7 @@ public class UIPanel : MonoBehaviour
 
 	void UpdateWidgets ()
 	{
-#if UNITY_FLASH
+#if UNITY_FLASH || UNITY_WP8
 		foreach (KeyValuePair<Transform, UINode> c in mChildren)
 		{
 			UINode pc = c.Value;
